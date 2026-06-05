@@ -90,7 +90,7 @@ td code{font-family:'Courier New',monospace;font-size:11px;background:#f0f4f8;pa
 const CFG = {
   clientId: '08dcc1b5-6041-4e67-ba6f-14650d4e6e62',
   tenantId: '655d15e1-e5fc-4868-8462-8463dc0ff014',
-  redirectUri: 'https://londerwijs.sharepoint.com/sites/BaO-Meldpunt/SiteAssets/LON-Meldpunt/setup.html',
+  redirectUri: 'https://lon-ka.github.io/LON-Meldpunt-2026/setup.html',
   siteId: 'londerwijs.sharepoint.com,2463b644-ba24-4563-a37f-a67f26941a09,4d5ecb10-38f0-422f-b892-af256a5da6fc',
 };
 
@@ -133,19 +133,19 @@ const KOLOMMEN_BEHEERDERS = [
 ];
 
 const msalCfg = { auth:{ clientId:CFG.clientId, authority:`https://login.microsoftonline.com/${CFG.tenantId}`, redirectUri:CFG.redirectUri }, cache:{ cacheLocation:'sessionStorage' } };
-const msal = new msal.PublicClientApplication(msalCfg);
+const msalClient = new msal.PublicClientApplication(msalCfg);
 let token = null;
 
 async function login() {
-  await msal.initialize();
-  const resp = await msal.handleRedirectPromise();
+  await msalClient.initialize();
+  const resp = await msalClient.handleRedirectPromise();
   if (resp) { token = resp.accessToken; showUser(resp.account); return; }
-  const accs = msal.getAllAccounts();
+  const accs = msalClient.getAllAccounts();
   if (accs.length) {
-    const t = await msal.acquireTokenSilent({ scopes:['Sites.FullControl.All','Mail.Send'], account:accs[0] });
+    const t = await msalClient.acquireTokenSilent({ scopes:['Sites.FullControl.All','Mail.Send'], account:accs[0] });
     token = t.accessToken; showUser(accs[0]); return;
   }
-  await msal.loginRedirect({ scopes:['Sites.FullControl.All','Mail.Send'] });
+  await msalClient.loginRedirect({ scopes:['Sites.FullControl.All','Mail.Send'] });
 }
 
 function showUser(acc) {
@@ -156,7 +156,7 @@ function showUser(acc) {
   document.getElementById('id-section').style.display='block';
 }
 
-function logout() { msal.logout(); }
+function logout() { msalClient.logout(); }
 
 function log(msg, type='info') {
   const d = document.getElementById('log'); d.style.display='block';
@@ -231,14 +231,14 @@ function kopeer(key) {
 }
 
 window.addEventListener('load', async () => {
-  await msal.initialize();
-  const resp = await msal.handleRedirectPromise();
+  await msalClient.initialize();
+  const resp = await msalClient.handleRedirectPromise();
   if (resp) { token = resp.accessToken; showUser(resp.account); }
   else {
-    const accs = msal.getAllAccounts();
+    const accs = msalClient.getAllAccounts();
     if (accs.length) {
       try {
-        const t = await msal.acquireTokenSilent({ scopes:['Sites.FullControl.All','Mail.Send'], account:accs[0] });
+        const t = await msalClient.acquireTokenSilent({ scopes:['Sites.FullControl.All','Mail.Send'], account:accs[0] });
         token = t.accessToken; showUser(accs[0]);
       } catch(e) {}
     }
