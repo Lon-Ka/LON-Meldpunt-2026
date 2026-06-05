@@ -37,74 +37,61 @@ Digitaal meldpunt voor Scholengroep Londerzeel BaO — Veiligheid · Welzijn · 
 | Parameter | Waarde |
 |-----------|--------|
 | App-naam | LON-Meldpunt |
-| Client ID | `08dcc1b5-6041-4e67-ba6f-14650d4e6e62` |
-| Tenant ID | `655d15e1-e5fc-4868-8462-8463dc0ff014` |
 | Tenant | londerwijs.be |
 
-**Redirect URIs (SPA):**
-```
-https://lon-ka.github.io/LON-Meldpunt-2026/
-https://lon-ka.github.io/LON-Meldpunt-2026/index.html
-https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html
-https://lon-ka.github.io/LON-Meldpunt-2026/setup.html
-```
-
-**API-machtigingen:**
-- `Sites.ReadWrite.All` (Gedelegeerd) — normaal gebruik
-- `Sites.FullControl.All` (Gedelegeerd) — enkel tijdens setup, daarna verwijderen
-- `Mail.Send` (Gedelegeerd) — e-mailnotificaties
+> ⚠️ Client ID en Tenant ID worden **niet** in dit publieke bestand opgenomen.
+> Raadpleeg het interne configuratiedocument (bewaard buiten deze repository).
 
 ## SharePoint
 
-**Site:** `https://londerwijs.sharepoint.com/sites/BaO-Meldpunt`  
-**Site ID:** `londerwijs.sharepoint.com,2463b644-ba24-4563-a37f-a67f26941a09,4d5ecb10-38f0-422f-b892-af256a5da6fc`
+**Site:** `https://londerwijs.sharepoint.com/sites/BaO-Meldpunt`
 
 **SharePoint-lijsten (13):**
 
-Per school (× 4): `LON-Veiligheid-[sleutel]`, `LON-Welzijn-[sleutel]`, `LON-Incidenten-[sleutel]`  
+Per school (× 4): `LON-Veiligheid-[sleutel]`, `LON-Welzijn-[sleutel]`, `LON-Incidenten-[sleutel]`
 Centraal: `LON-Beheerders`
+
+> ⚠️ List IDs worden **niet** in dit publieke bestand opgenomen.
+> Ze staan enkel in de lokale kopie van `index.html` en `beheer.html`.
+
+## API-machtigingen
+
+| Machtiging | Gebruik |
+|---|---|
+| `Sites.ReadWrite.All` | Meldingen lezen en schrijven |
+| `User.Read` | Ingelogde gebruiker identificeren |
+| `Mail.Send` | E-mailnotificaties |
+| `Sites.FullControl.All` | Enkel tijdens setup — daarna verwijderen |
 
 ## Installatie
 
 ### 1. Setup uitvoeren (eenmalig)
 1. Upload alle bestanden naar deze repository
 2. Activeer GitHub Pages: Settings → Pages → Branch: main / root
-3. Open `setup.html` in de browser
-4. Meld aan als ICT-beheerder met `Sites.FullControl.All`-machtiging
+3. Voeg tijdelijk `Sites.FullControl.All` toe in Azure Portal
+4. Open `setup.html` en meld aan als ICT-beheerder
 5. Klik "SharePoint-lijsten aanmaken"
 6. Kopieer de List IDs naar `index.html` en `beheer.html`
+7. Verwijder `Sites.FullControl.All` uit Azure Portal
 
-### 2. List IDs invullen
-Zoek in `index.html` en `beheer.html` de `CONFIG`-sectie en vervang elke `PLACEHOLDER` door de corresponderende List ID uit setup.html.
+### 2. Beheerders toevoegen
+Voeg de bevoegde personen toe aan de `LON-Beheerders` lijst in SharePoint.
+Kolommen: `Title` (naam), `Email`, `Rol` (admin / directie / zorg), `School` (sleutel), `Actief` (ja/nee).
 
-### 3. Sites.FullControl.All verwijderen
-Na de setup verwijder je de `Sites.FullControl.All` machtiging in Azure Portal → API permissions. De app werkt verder met `Sites.ReadWrite.All`.
+> ⚠️ Voeg **geen namen of e-mailadressen** toe aan dit publieke README-bestand.
+> Beheerdersbeheer gebeurt uitsluitend via de SharePoint-lijst.
 
-### 4. Beheerders toevoegen
-Voeg de eerste beheerders toe aan de `LON-Beheerders` lijst in SharePoint:
-
-| Naam | E-mail | Rol | School |
-|------|--------|-----|--------|
-| Wim Cools | ict@centrumschool.londerzeel.be | admin | alle |
-| Katelijne Jespers | directie@centrumschool.londerzeel.be | directie | csl |
-| Farah De Clercq | directie@kouterschool.londerzeel.be | directie | ko |
-| Pieter Sarens | directie@terelst.londerzeel.be | directie | te |
-| Iris De Vocht | irisdevocht@terelst.londerzeel.be | zorg | te |
-| Els Segers | elssegers@terelst.londerzeel.be | zorg | te |
-| Lymke Celerier | lymkecelerier@centrumschool.londerzeel.be | zorg | csl |
-| Silke Royaert | silkeroyaert@centrumschool.londerzeel.be | zorg | csl |
-| Laura Boeykens | lauraboeyns@centrumschool.londerzeel.be | zorg | csl |
-| Leen Van Beneden | zorg@kouterschool.londerzeel.be | zorg | ko |
-| Rita Rubbrecht | secretariaatlonka@centrumschool.londerzeel.be | admin | alle |
-
-## Bijwerken
-
-Pas `index.html` of `beheer.html` aan en push naar `main`. GitHub Pages is automatisch live na ±1 minuut (controleer de groene vink bij **Actions**).
+### 3. Bijwerken
+Pas `index.html` of `beheer.html` aan en push naar `main`.
+GitHub Pages is automatisch live na ±1 minuut.
 
 ## GDPR
 
-Zie `gdpr.html` voor het volledige privacybeleid.  
-Verwerkingsregister en handleidingen zijn beschikbaar als aparte Word-documenten.
+Zie `gdpr.html` voor het volledige privacybeleid.
+Verwerkingsregister en handleidingen zijn beschikbaar als aparte Word-documenten (intern bewaard, niet in deze repository).
+
+> ℹ️ Deze repository is publiek. Voeg **nooit** persoonsgegevens, wachtwoorden,
+> API-sleutels, Client IDs, List IDs of e-mailadressen toe aan bestanden in deze repository.
 
 ---
 
