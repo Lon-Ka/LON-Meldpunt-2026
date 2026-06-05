@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LON-Meldpunt 2026 — Setup</title>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.0/lib/msal-browser.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:14px;background:#f4f5f7;color:#1a1d27;padding:20px}
+h1{font-size:22px;font-weight:600;color:#1F4E79;margin-bottom:4px}
+h2{font-size:15px;font-weight:600;color:#2E75B6;margin:20px 0 8px}
+.sub{font-size:12px;color:#5a6070;margin-bottom:20px}
+.card{background:#fff;border:1px solid #dde2ec;border-radius:10px;padding:20px;margin-bottom:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:8px 18px;border-radius:7px;cursor:pointer;border:none;transition:all .14s}
+.btn-p{background:#1F4E79;color:#fff}.btn-p:hover{background:#154060}
+.btn-g{background:#2a9e68;color:#fff}.btn-g:hover{background:#1e7a50}
+.btn-r{background:#c83232;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.log{background:#f0f4f8;border:1px solid #c8d4e8;border-radius:7px;padding:14px;font-family:'Courier New',monospace;font-size:12px;max-height:420px;overflow-y:auto;margin-top:12px;line-height:1.7}
+.log-ok{color:#1e7a50}.log-err{color:#c83232}.log-info{color:#1F4E79}.log-warn{color:#b07800}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:12px;border:1px solid}
+.b-blue{background:#eaf0fb;color:#1F4E79;border-color:#b8cff0}
+.b-green{background:#e8f8f1;color:#1e7a50;border-color:#a0ddc0}
+.b-red{background:#fdeaea;color:#c83232;border-color:#f0aaaa}
+.b-amber{background:#fdf5e0;color:#b07800;border-color:#f0d890}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.sk{background:#f0f4f8;border-radius:7px;padding:10px 12px;border-left:3px solid #2E75B6;font-size:12px}
+.sk-n{font-weight:600;margin-bottom:2px}.sk-s{color:#5a6070;font-size:11px}
+.warn-box{background:#fdf5e0;border:1px solid #f0d890;border-radius:7px;padding:12px 14px;font-size:12px;color:#7a5500;margin-bottom:14px;line-height:1.6}
+.info-box{background:#eaf0fb;border:1px solid #b8cff0;border-radius:7px;padding:12px 14px;font-size:12px;color:#1F4E79;margin-bottom:14px;line-height:1.6}
+#user-bar{display:none;align-items:center;gap:10px;background:#fff;border:1px solid #dde2ec;border-radius:7px;padding:10px 14px;margin-bottom:16px;font-size:12px}
+#id-section{display:none}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th{text-align:left;padding:7px 10px;background:#eaf0fb;color:#1F4E79;font-weight:600;font-size:11px;border:1px solid #dde2ec}
+td{padding:7px 10px;border:1px solid #dde2ec;vertical-align:middle}
+td code{font-family:'Courier New',monospace;font-size:11px;background:#f0f4f8;padding:1px 5px;border-radius:3px;color:#1F4E79}
+.copy-btn{font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid #b8cff0;background:#eaf0fb;color:#1F4E79;cursor:pointer}
+</style>
+</head>
+<body>
+<h1>🛠 LON-Meldpunt 2026 — Setup</h1>
+<p class="sub">Scholengroep Londerzeel BaO — Eenmalige installatie van SharePoint-lijsten</p>
+
+<div class="warn-box">
+⚠️ <strong>Dit bestand is enkel bedoeld voor de ICT-verantwoordelijke.</strong> Voer de setup slechts één keer uit. Na uitvoering verwijder je dit bestand uit de repository of zet je de <code>Sites.FullControl.All</code> machtiging terug op <code>Sites.ReadWrite.All</code>.
+</div>
+
+<div class="card">
+  <h2>Stap 1 — Aanmelden</h2>
+  <div id="user-bar">
+    <span>✅ Aangemeld als:</span>
+    <strong id="user-name">—</strong>
+    <span class="badge b-blue" id="user-email">—</span>
+    <button class="btn btn-r" onclick="logout()" style="padding:4px 10px;font-size:11px">Afmelden</button>
+  </div>
+  <button class="btn btn-p" id="btn-login" onclick="login()">Aanmelden met Microsoft 365</button>
+</div>
+
+<div id="id-section">
+<div class="card">
+  <h2>Stap 2 — Overzicht aan te maken lijsten</h2>
+  <p style="font-size:12px;color:#5a6070;margin-bottom:10px">Per school worden 3 lijsten aangemaakt (Veiligheid, Welzijn, Incidenten) + 1 centrale Beheerders-lijst. Totaal: <strong>13 lijsten</strong>.</p>
+  <div class="grid">
+    <div class="sk"><div class="sk-n">CS Lijsterstraat</div><div class="sk-s">Sleutel: csl</div></div>
+    <div class="sk"><div class="sk-n">CS Stationsstraat</div><div class="sk-s">Sleutel: css</div></div>
+    <div class="sk"><div class="sk-n">Kouterschool</div><div class="sk-s">Sleutel: ko</div></div>
+    <div class="sk"><div class="sk-n">School Ter Elst</div><div class="sk-s">Sleutel: te</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Stap 3 — Lijsten aanmaken</h2>
+  <div class="info-box">Na uitvoering verschijnen de List IDs hieronder. Kopieer ze naar <code>index.html</code> en <code>beheer.html</code>.</div>
+  <button class="btn btn-g" id="btn-setup" onclick="runSetup()">▶ SharePoint-lijsten aanmaken</button>
+  <div class="log" id="log" style="display:none"></div>
+</div>
+
+<div class="card" id="id-card" style="display:none">
+  <h2>Stap 4 — List IDs (kopieer naar index.html en beheer.html)</h2>
+  <div class="info-box">Vervang in de CONFIG-sectie van <code>index.html</code> en <code>beheer.html</code> elke <code>PLACEHOLDER</code> door de corresponderende ID hieronder.</div>
+  <table>
+    <tr><th>Lijst</th><th>List ID</th><th></th></tr>
+    <tbody id="id-table"></tbody>
+  </table>
+</div>
+</div>
+
+<script>
+const CFG = {
+  clientId: '08dcc1b5-6041-4e67-ba6f-14650d4e6e62',
+  tenantId: '655d15e1-e5fc-4868-8462-8463dc0ff014',
+  redirectUri: 'https://londerwijs.sharepoint.com/sites/BaO-Meldpunt/SiteAssets/LON-Meldpunt/setup.html',
+  siteId: 'londerwijs.sharepoint.com,2463b644-ba24-4563-a37f-a67f26941a09,4d5ecb10-38f0-422f-b892-af256a5da6fc',
+};
+
+const SCHOLEN = [
+  { sleutel: 'csl', naam: 'CS Lijsterstraat' },
+  { sleutel: 'css', naam: 'CS Stationsstraat' },
+  { sleutel: 'ko',  naam: 'Kouterschool' },
+  { sleutel: 'te',  naam: 'School Ter Elst' },
+];
+
+const KOLOMMEN_VEILIGHEID = [
+  {name:'School',type:'Text'},{name:'Vestiging',type:'Text'},{name:'TypeMelding',type:'Text'},
+  {name:'Datum',type:'DateTime'},{name:'Tijdstip',type:'Text'},{name:'Naam',type:'Text'},
+  {name:'Functie',type:'Text'},{name:'Locatie',type:'Text'},{name:'Traject',type:'Text'},
+  {name:'Omschrijving',type:'Note'},{name:'Letsel',type:'Text'},{name:'Lichaamsdeel',type:'Text'},
+  {name:'Afwezigheid',type:'Text'},{name:'ArtsGeraadpleegd',type:'Boolean'},
+  {name:'AgodiVereist',type:'Boolean'},{name:'Getuigen',type:'Note'},
+  {name:'Bijlagen',type:'Text'},{name:'Status',type:'Text'},
+  {name:'Ingediend',type:'DateTime'},{name:'IngediendDoor',type:'Text'},
+  {name:'Opvolging',type:'Note'},{name:'AGODI_Deadline',type:'DateTime'},
+  {name:'Consolidatie',type:'DateTime'},
+];
+const KOLOMMEN_WELZIJN = [
+  {name:'School',type:'Text'},{name:'TypeMelding',type:'Text'},
+  {name:'Omschrijving',type:'Note'},{name:'BetrokkeneVertrouwelijk',type:'Text'},
+  {name:'Toegewezen',type:'Text'},{name:'Status',type:'Text'},
+  {name:'Ingediend',type:'DateTime'},{name:'IngediendDoor',type:'Text'},
+  {name:'Opvolging',type:'Note'},{name:'Vertrouwelijk',type:'Boolean'},
+];
+const KOLOMMEN_INCIDENTEN = [
+  {name:'School',type:'Text'},{name:'TypeMelding',type:'Text'},{name:'TypeIncident',type:'Text'},
+  {name:'Datum',type:'DateTime'},{name:'Tijdstip',type:'Text'},{name:'Locatie',type:'Text'},
+  {name:'Omschrijving',type:'Note'},{name:'Dader',type:'Text'},{name:'BetrokkenMedewerker',type:'Text'},
+  {name:'Getuigen',type:'Note'},{name:'PV',type:'Text'},{name:'Bijlagen',type:'Text'},
+  {name:'Status',type:'Text'},{name:'Ingediend',type:'DateTime'},{name:'IngediendDoor',type:'Text'},
+  {name:'Opvolging',type:'Note'},
+];
+const KOLOMMEN_BEHEERDERS = [
+  {name:'Email',type:'Text'},{name:'Rol',type:'Text'},{name:'School',type:'Text'},{name:'Actief',type:'Boolean'},
+];
+
+const msalCfg = { auth:{ clientId:CFG.clientId, authority:`https://login.microsoftonline.com/${CFG.tenantId}`, redirectUri:CFG.redirectUri }, cache:{ cacheLocation:'sessionStorage' } };
+const msal = new msal.PublicClientApplication(msalCfg);
+let token = null;
+
+async function login() {
+  await msal.initialize();
+  const resp = await msal.handleRedirectPromise();
+  if (resp) { token = resp.accessToken; showUser(resp.account); return; }
+  const accs = msal.getAllAccounts();
+  if (accs.length) {
+    const t = await msal.acquireTokenSilent({ scopes:['Sites.FullControl.All','Mail.Send'], account:accs[0] });
+    token = t.accessToken; showUser(accs[0]); return;
+  }
+  await msal.loginRedirect({ scopes:['Sites.FullControl.All','Mail.Send'] });
+}
+
+function showUser(acc) {
+  document.getElementById('btn-login').style.display='none';
+  const ub = document.getElementById('user-bar'); ub.style.display='flex';
+  document.getElementById('user-name').textContent = acc.name||acc.username;
+  document.getElementById('user-email').textContent = acc.username;
+  document.getElementById('id-section').style.display='block';
+}
+
+function logout() { msal.logout(); }
+
+function log(msg, type='info') {
+  const d = document.getElementById('log'); d.style.display='block';
+  d.innerHTML += `<div class="log-${type}">${new Date().toLocaleTimeString('nl')} — ${msg}</div>`;
+  d.scrollTop = d.scrollHeight;
+}
+
+async function graphPost(url, body) {
+  const r = await fetch(`https://graph.microsoft.com/v1.0${url}`, {
+    method:'POST', headers:{ 'Authorization':`Bearer ${token}`, 'Content-Type':'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message||r.status); }
+  return r.json();
+}
+
+async function maakLijst(naam, kolommen) {
+  log(`Lijst aanmaken: <strong>${naam}</strong>…`);
+  let res;
+  try {
+    res = await graphPost(`/sites/${CFG.siteId}/lists`, {
+      displayName: naam, list:{ template:'genericList' }
+    });
+  } catch(e) { log(`❌ Fout bij aanmaken ${naam}: ${e.message}`, 'err'); return null; }
+  const listId = res.id;
+  log(`✅ ${naam} aangemaakt (ID: ${listId.substring(0,8)}…)`, 'ok');
+  for (const kol of kolommen) {
+    try {
+      const body = { name: kol.name, [kol.type==='Note'?'text':kol.type==='DateTime'?'dateTime':kol.type==='Boolean'?'boolean':'text']: {} };
+      if (kol.type === 'Note') body.text = { allowMultipleLines: true };
+      await graphPost(`/sites/${CFG.siteId}/lists/${listId}/columns`, body);
+    } catch(e) { log(`  ⚠️ Kolom ${kol.name}: ${e.message}`, 'warn'); }
+  }
+  log(`  📋 ${kolommen.length} kolommen verwerkt`, 'info');
+  return listId;
+}
+
+async function runSetup() {
+  const btn = document.getElementById('btn-setup');
+  btn.disabled = true; btn.textContent = '⏳ Bezig…';
+  const ids = {};
+  log('=== LON-Meldpunt 2026 — Setup gestart ===', 'info');
+
+  for (const school of SCHOLEN) {
+    log(`\n📍 School: ${school.naam}`, 'info');
+    ids[`veiligheid_${school.sleutel}`] = await maakLijst(`LON-Veiligheid-${school.sleutel}`, KOLOMMEN_VEILIGHEID);
+    ids[`welzijn_${school.sleutel}`]    = await maakLijst(`LON-Welzijn-${school.sleutel}`, KOLOMMEN_WELZIJN);
+    ids[`incidenten_${school.sleutel}`] = await maakLijst(`LON-Incidenten-${school.sleutel}`, KOLOMMEN_INCIDENTEN);
+  }
+  log('\n📋 Centrale beheerderlijst…', 'info');
+  ids['beheerders'] = await maakLijst('LON-Beheerders', KOLOMMEN_BEHEERDERS);
+
+  log('\n=== Setup voltooid! ===', 'ok');
+  log('Kopieer de List IDs hieronder naar index.html en beheer.html.', 'info');
+
+  // Toon IDs
+  const kaart = document.getElementById('id-card'); kaart.style.display='block';
+  const tbody = document.getElementById('id-table');
+  tbody.innerHTML = '';
+  for (const [key, id] of Object.entries(ids)) {
+    if (!id) continue;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><code>LON-${key.replace('_','-')}</code></td><td><code id="id-${key}">${id}</code></td><td><button class="copy-btn" onclick="kopeer('${key}')">Kopieer</button></td>`;
+    tbody.appendChild(tr);
+  }
+  btn.textContent = '✅ Setup voltooid';
+}
+
+function kopeer(key) {
+  const el = document.getElementById(`id-${key}`);
+  navigator.clipboard.writeText(el.textContent);
+}
+
+window.addEventListener('load', async () => {
+  await msal.initialize();
+  const resp = await msal.handleRedirectPromise();
+  if (resp) { token = resp.accessToken; showUser(resp.account); }
+  else {
+    const accs = msal.getAllAccounts();
+    if (accs.length) {
+      try {
+        const t = await msal.acquireTokenSilent({ scopes:['Sites.FullControl.All','Mail.Send'], account:accs[0] });
+        token = t.accessToken; showUser(accs[0]);
+      } catch(e) {}
+    }
+  }
+});
+</script>
+</body>
+</html>
