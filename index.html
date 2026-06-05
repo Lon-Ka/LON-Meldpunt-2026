@@ -3,949 +3,652 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meldpunt LON</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>LON-Meldpunt 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.0/lib/msal-browser.min.js"></script>
 <style>
-:root{
-  --cb:#f4f5f7;--cs:#ffffff;--cr:#f8f9fb;
-  --bd:rgba(0,0,0,.09);--bdm:rgba(0,0,0,.15);
-  --ct:#1a1d27;--cm:#5a6070;--cf:#c8cdd8;
-  --blue:#3b6fd4;--blue-bg:#eaf0fb;--blue-br:#b8cff0;
-  --pink:#c94070;--pink-bg:#fceef4;--pink-br:#f0b0cc;
-  --ora:#d4621e;--ora-bg:#fdf0e8;--ora-br:#f0c8a0;
-  --red:#c83232;--red-bg:#fdeaea;--red-br:#f0aaaa;
-  --grn:#2a9e68;--grn-bg:#e8f8f1;--grn-br:#a0ddc0;
-  --amb:#c4900a;--amb-bg:#fdf5e0;--amb-br:#f0d890;
-  --r:8px;--rl:12px;--sw:218px;--th:52px;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:var(--font);font-size:14px;background:var(--cb);color:var(--ct);line-height:1.5;-webkit-font-smoothing:antialiased}
+:root{--blauw:#1F4E79;--blauw-l:#2E75B6;--blauw-bg:#eaf0fb;--blauw-br:#b8cff0;--tekst:#1a1d27;--muted:#5a6070;--bg:#f4f5f7;--wit:#fff;--border:#dde2ec;--grn:#2a9e68;--grn-bg:#e8f8f1;--grn-br:#a0ddc0;--red:#c83232;--red-bg:#fdeaea;--red-br:#f0aaaa;--amb:#b07800;--amb-bg:#fdf5e0;--amb-br:#f0d890;--pink:#c94070;--pink-bg:#fceef4;--pink-br:#f0b0cc;--ora:#d4621e;--ora-bg:#fdf0e8;--ora-br:#f0c8a0;--r:8px;--rl:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;background:var(--bg);color:var(--tekst);-webkit-font-smoothing:antialiased}
 .shell{display:flex;height:100vh;overflow:hidden}
-
-/* SIDEBAR */
-.sb{width:var(--sw);flex-shrink:0;background:var(--cs);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden}
-.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:var(--cf);border-radius:2px}
-.sb-logo{padding:15px 14px 12px;border-bottom:1px solid var(--bd);flex-shrink:0}
-.sb-mark{display:flex;align-items:center;gap:9px;margin-bottom:5px}
-.sb-ic{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3b6fd4,#5a4fd4);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sb-ic svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.sb-name{font-size:13px;font-weight:600;letter-spacing:-.01em}
-.sb-sub{font-size:10px;color:var(--cm);letter-spacing:.02em}
-.nav-sec{padding:7px 0 3px}
-.nav-lbl{font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cf);padding:4px 14px;display:flex;align-items:center;gap:5px}
-.nav-lbl::after{content:'';flex:1;height:1px;background:var(--bd)}
-.ni{display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:12.5px;cursor:pointer;color:var(--cm);border-left:2px solid transparent;transition:all .14s;user-select:none}
-.ni:hover{background:rgba(255,255,255,.03);color:var(--ct)}
-.ni.active{color:var(--ct);font-weight:500;background:rgba(255,255,255,.04)}
-.ni.active.nv{border-left-color:var(--blue)}.ni.active.nw{border-left-color:var(--pink)}
-.ni.active.ni2{border-left-color:var(--ora)}.ni.active.nb{border-left-color:var(--grn)}
-.ni svg{width:14px;height:14px;flex-shrink:0;opacity:.65}.ni.active svg{opacity:1}
+.sb{width:210px;flex-shrink:0;background:var(--wit);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:#ccd;border-radius:2px}
+.sb-logo{padding:14px;border-bottom:1px solid var(--border)}
+.sb-ic{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blauw),var(--blauw-l));display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0}
+.sb-mark{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.sb-t{font-size:13px;font-weight:600;color:var(--blauw)}.sb-s{font-size:10px;color:var(--muted)}
+.nav-lbl{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#aab;padding:10px 14px 3px;display:flex;align-items:center;gap:5px}
+.nav-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+.ni{display:flex;align-items:center;gap:7px;padding:6px 14px;font-size:12px;cursor:pointer;color:var(--muted);border-left:2px solid transparent;transition:all .12s;user-select:none}
+.ni:hover{background:var(--bg);color:var(--tekst)}
+.ni.active{color:var(--tekst);font-weight:500;background:var(--blauw-bg)}
+.ni.active.nv{border-left-color:var(--blauw)}
+.ni.active.nw{border-left-color:var(--pink);color:var(--pink);background:var(--pink-bg)}
+.ni.active.ni2{border-left-color:var(--ora);color:var(--ora);background:var(--ora-bg)}
+.ni svg{width:14px;height:14px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ndot{width:6px;height:6px;border-radius:50%;background:var(--red);margin-left:auto;animation:pulse 2s infinite;flex-shrink:0}
-.nlck{margin-left:auto;opacity:.35;font-size:10px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.role-bar{margin-top:auto;padding:11px 13px;border-top:1px solid var(--bd);flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.nlck{margin-left:auto;font-size:10px;opacity:.4}
+.role-bar{margin-top:auto;padding:10px 13px;border-top:1px solid var(--border)}
 .role-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
-.av-a{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-br)}
-.av-z{background:var(--grn-bg);color:var(--grn);border:1px solid var(--grn-br)}
-.av-p{background:var(--cf);color:var(--ct)}
-.rn{font-size:11.5px;font-weight:500}.rs{font-size:10px;color:var(--cm)}
-.rsel{width:100%;font-size:10.5px;font-family:var(--font);background:var(--cr);color:var(--cm);border:1px solid var(--bd);border-radius:6px;padding:5px 8px;cursor:pointer;outline:none;margin-bottom:4px;appearance:none}
-.rsel:last-child{margin-bottom:0}.rsel:hover{border-color:var(--bdm);color:var(--ct)}
-
-/* MAIN */
+.av{width:26px;height:26px;border-radius:50%;background:var(--blauw-bg);color:var(--blauw);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;border:1px solid var(--blauw-br);flex-shrink:0}
+.rn{font-size:11.5px;font-weight:500}.rs{font-size:10px;color:var(--muted)}
+.rsel{width:100%;font-size:10.5px;font-family:inherit;background:var(--bg);color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:4px 7px;cursor:pointer;outline:none;margin-bottom:4px;appearance:none}
+.rsel:hover{border-color:#bbc;color:var(--tekst)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.topbar{height:var(--th);flex-shrink:0;background:var(--cs);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:12px}
-.tb-l{display:flex;align-items:center;gap:10px}
-.tb-t{font-size:14px;font-weight:600;letter-spacing:-.01em}
-.tb-r{display:flex;align-items:center;gap:8px}
-.sp{font-size:10.5px;color:var(--cm);padding:4px 10px;border:1px solid var(--bd);border-radius:20px;white-space:nowrap}
-.content{flex:1;overflow-y:auto;padding:20px}
-.content::-webkit-scrollbar{width:3px}.content::-webkit-scrollbar-thumb{background:var(--cf);border-radius:2px}
-.screen{display:none}.screen.active{display:block;animation:fi .18s ease}
-@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-
-/* BADGES */
-.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap;letter-spacing:.01em;border:1px solid}
-.b-blue{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-br)}
-.b-pink{background:var(--pink-bg);color:var(--pink);border-color:var(--pink-br)}
-.b-ora{background:var(--ora-bg);color:var(--ora);border-color:var(--ora-br)}
-.b-red{background:var(--red-bg);color:var(--red);border-color:var(--red-br)}
+.topbar{height:50px;flex-shrink:0;background:var(--wit);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:12px}
+.tb-l{display:flex;align-items:center;gap:8px}
+.tb-t{font-size:14px;font-weight:600;color:var(--blauw)}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:2px 8px;border-radius:12px;border:1px solid;white-space:nowrap}
+.b-blue{background:var(--blauw-bg);color:var(--blauw);border-color:var(--blauw-br)}
 .b-grn{background:var(--grn-bg);color:var(--grn);border-color:var(--grn-br)}
+.b-red{background:var(--red-bg);color:var(--red);border-color:var(--red-br)}
 .b-amb{background:var(--amb-bg);color:var(--amb);border-color:var(--amb-br)}
-.b-muted{background:rgba(255,255,255,.05);color:var(--cm);border-color:var(--bd)}
-
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;font-family:var(--font);padding:7px 14px;border-radius:var(--r);cursor:pointer;border:1px solid var(--bdm);background:var(--cr);color:var(--ct);transition:all .14s;white-space:nowrap}
-.btn:hover{background:rgba(255,255,255,.07)}.btn:active{transform:scale(.98)}
-.btn svg{width:14px;height:14px;flex-shrink:0}
-.btn-p{background:var(--blue);border-color:var(--blue);color:#fff}.btn-p:hover{background:#3a6ee8}
+.b-pink{background:var(--pink-bg);color:var(--pink);border-color:var(--pink-br)}
+.b-muted{background:var(--bg);color:var(--muted);border-color:var(--border)}
+.btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;font-family:inherit;padding:6px 13px;border-radius:var(--r);cursor:pointer;border:1px solid var(--border);background:var(--wit);color:var(--tekst);transition:all .12s}
+.btn:hover{background:var(--bg)}.btn:active{transform:scale(.98)}
+.btn svg{width:13px;height:13px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.btn-p{background:var(--blauw);border-color:var(--blauw);color:#fff}.btn-p:hover{background:#154060}
 .btn-pk{background:var(--pink);border-color:var(--pink);color:#fff}
 .btn-or{background:var(--ora);border-color:var(--ora);color:#fff}
-.btn-r{background:var(--red);border-color:var(--red);color:#fff}.btn-r:hover{background:#c83030}
-.btn-sm{font-size:11px;padding:5px 10px}
-.brow{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
-
-/* ALERTS */
-.alert{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:var(--r);margin-bottom:14px;font-size:12px;line-height:1.6;border:1px solid}
-.alert svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
-.al-b{background:var(--blue-bg);border-color:var(--blue-br);color:#a0bcff}
-.al-a{background:var(--amb-bg);border-color:var(--amb-br);color:#f0c86a}
-.al-pk{background:var(--pink-bg);border-color:var(--pink-br);color:#f098bc}
-.al-r{background:var(--red-bg);border-color:var(--red-br);color:#f08080}
+.btn-r{background:var(--red);border-color:var(--red);color:#fff}
+.btn-sm{font-size:11px;padding:4px 9px}
+.brow{display:flex;gap:7px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.content{flex:1;overflow-y:auto;padding:18px}
+.content::-webkit-scrollbar{width:4px}.content::-webkit-scrollbar-thumb{background:#ccd;border-radius:2px}
+.screen{display:none}.screen.active{display:block;animation:fi .18s ease}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.alert{display:flex;align-items:flex-start;gap:9px;padding:9px 13px;border-radius:var(--r);margin-bottom:12px;font-size:12px;line-height:1.6;border:1px solid}
+.al-b{background:var(--blauw-bg);border-color:var(--blauw-br);color:#1a3a6e}
+.al-a{background:var(--amb-bg);border-color:var(--amb-br);color:#7a5500}
+.al-pk{background:var(--pink-bg);border-color:var(--pink-br);color:#72243E}
+.al-r{background:var(--red-bg);border-color:var(--red-br);color:#791F1F}
 .al-b a,.al-pk a{color:inherit;text-decoration:underline;cursor:pointer}
-
-/* KPI */
-.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
-.kgrid3{grid-template-columns:repeat(3,1fr)}
-.kpi{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px}
-.kpi-l{font-size:10.5px;color:var(--cm);margin-bottom:4px;font-weight:500}
-.kpi-v{font-size:26px;font-weight:600;letter-spacing:-.03em}
-.kv-b{color:var(--blue)}.kv-a{color:var(--amb)}.kv-g{color:var(--grn)}.kv-r{color:var(--red)}.kv-pk{color:var(--pink)}
-
-/* PIJLER CARDS */
-.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
-.pc{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:15px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
-.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.pc.pv::before{background:var(--blue)}.pc.pw::before{background:var(--pink)}.pc.pi::before{background:var(--ora)}
-.pc:hover{background:rgba(255,255,255,.04);transform:translateY(-1px)}
-.pc svg{width:20px;height:20px;margin-bottom:10px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.pc.pv svg{stroke:var(--blue)}.pc.pw svg{stroke:var(--pink)}.pc.pi svg{stroke:var(--ora)}
-.pc-t{font-size:13px;font-weight:600;margin-bottom:2px}
-.pc-s{font-size:11px;color:var(--cm);margin-bottom:10px}
-.pc-n{font-size:22px;font-weight:700;letter-spacing:-.03em}
-.pc.pv .pc-n{color:var(--blue)}.pc.pw .pc-n{color:var(--pink)}.pc.pi .pc-n{color:var(--ora)}
-
-/* SCHOOL TILES */
-.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
-.sk{background:var(--cr);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;border-left:3px solid}
-.sk.cs{border-left-color:var(--blue)}.sk.ko{border-left-color:var(--grn)}.sk.te{border-left-color:var(--amb)}
-.sk-l{font-size:10px;color:var(--cm);margin-bottom:3px}
-.sk-v{font-size:20px;font-weight:700;letter-spacing:-.03em}
-.sk.cs .sk-v{color:var(--blue)}.sk.ko .sk-v{color:var(--grn)}.sk.te .sk-v{color:var(--amb)}
-
-/* TABLE */
-.tw{border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:16px}
-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
-th{text-align:left;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cm);padding:9px 12px;border-bottom:1px solid var(--bd);background:var(--cr);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-td{padding:9px 12px;border-bottom:1px solid var(--bd);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
-tr:last-child td{border-bottom:none}tr:hover td{background:rgba(255,255,255,.02)}
-.cl{color:var(--blue);cursor:pointer;font-weight:500;font-family:var(--mono);font-size:11px}.cl:hover{text-decoration:underline}
-
-/* TABS */
-.stabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
-.stabs::-webkit-scrollbar{display:none}
-.stab{font-size:11.5px;padding:8px 13px;cursor:pointer;color:var(--cm);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .14s;user-select:none}
-.stab:hover{color:var(--ct)}.stab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
-.stab.active.w{color:var(--pink);border-bottom-color:var(--pink)}.stab.active.i{color:var(--ora);border-bottom-color:var(--ora)}
-
-/* TYPE SELECTOR */
 .tsl{font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;margin-top:14px;display:flex;align-items:center;gap:7px}
-.tsl:first-of-type{margin-top:0}.tsl svg{width:13px;height:13px}
-.tsl.lv{color:var(--blue)}.tsl.lw{color:var(--pink)}.tsl.li{color:var(--ora)}
-.tsl-n{font-size:9.5px;font-weight:400;color:var(--cm);text-transform:none;letter-spacing:0}
+.tsl:first-of-type{margin-top:0}
+.tsl.lv{color:var(--blauw)}.tsl.lw{color:var(--pink)}.tsl.li{color:var(--ora)}
+.tsl-n{font-size:9.5px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0}
 .tgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:6px}
-.tc{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;cursor:pointer;transition:all .14s}
-.tc:hover{background:rgba(255,255,255,.04);border-color:var(--bdm)}
-.tc.sel{border-width:1.5px}
-.tc.sel.sv{border-color:var(--blue);background:var(--blue-bg)}
-.tc.sel.sw{border-color:var(--pink);background:var(--pink-bg)}
-.tc.sel.si{border-color:var(--ora);background:var(--ora-bg)}
-.tc.sel.sr{border-color:var(--red);background:var(--red-bg)}
-.tc svg{width:18px;height:18px;margin-bottom:7px;display:block;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.tc.sv svg{stroke:var(--blue)}.tc.sw svg{stroke:var(--pink)}.tc.si svg{stroke:var(--ora)}.tc.sr svg{stroke:var(--red)}
-.tc-t{font-size:12px;font-weight:600;margin-bottom:2px}.tc-s{font-size:10.5px;color:var(--cm)}
-
-/* FORM */
-.fsec{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px}
-.fsec-t{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--cm);margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.fsec-t svg{width:13px;height:13px;flex-shrink:0}
-.frow{display:flex;gap:10px;margin-bottom:10px}.frow:last-child{margin-bottom:0}
+.tc{background:var(--wit);border:1px solid var(--border);border-radius:var(--rl);padding:11px 13px;cursor:pointer;transition:all .13s}
+.tc:hover{background:var(--blauw-bg);border-color:var(--blauw-br)}
+.tc.sel{border-width:1.5px}.tc.sel.sv{border-color:var(--blauw);background:var(--blauw-bg)}
+.tc.sel.sw{border-color:var(--pink);background:var(--pink-bg)}.tc.sel.si{border-color:var(--ora);background:var(--ora-bg)}.tc.sel.sr{border-color:var(--red);background:var(--red-bg)}
+.tc-ic{font-size:18px;margin-bottom:6px;display:block}.tc-t{font-size:12px;font-weight:600;margin-bottom:2px}.tc-s{font-size:10.5px;color:var(--muted)}
+.fsec{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:10px}
+.fsec-t{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.frow{display:flex;gap:9px;margin-bottom:9px}.frow:last-child{margin-bottom:0}
 .ff{flex:1;min-width:0}
-.ff label{display:block;font-size:11px;color:var(--cm);margin-bottom:4px;font-weight:500}
-.ff input,.ff select,.ff textarea{width:100%;font-size:12px;font-family:var(--font);background:var(--cs);color:var(--ct);border:1px solid var(--bd);border-radius:var(--r);padding:7px 10px;outline:none;transition:border-color .14s;appearance:none}
-.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,124,255,.12)}
-.ff textarea{resize:vertical;min-height:64px;line-height:1.6}
-.fnote{font-size:10px;color:var(--cm);margin-top:4px;display:flex;align-items:center;gap:4px}
-.fnote svg{width:11px;height:11px;flex-shrink:0;opacity:.7}
-
-/* CHIPS */
+.ff label{display:block;font-size:11px;color:var(--muted);margin-bottom:3px;font-weight:500}
+.ff input,.ff select,.ff textarea{width:100%;font-size:12px;font-family:inherit;background:var(--wit);color:var(--tekst);border:1px solid var(--border);border-radius:var(--r);padding:6px 9px;outline:none;transition:border-color .12s;appearance:none}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--blauw-l);box-shadow:0 0 0 3px rgba(46,117,182,.1)}
+.ff textarea{resize:vertical;min-height:60px;line-height:1.5}
+.fnote{font-size:10px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:3px}
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
-.chip{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--bd);cursor:pointer;background:var(--cs);color:var(--cm);transition:all .12s;user-select:none}
-.chip:hover{border-color:var(--bdm);color:var(--ct)}
-.chip.cs{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);font-weight:500}
+.chip{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--border);cursor:pointer;background:var(--wit);color:var(--muted);transition:all .11s;user-select:none}
+.chip:hover{border-color:#bbc;color:var(--tekst)}
+.chip.cs{background:var(--blauw-bg);border-color:var(--blauw);color:var(--blauw);font-weight:500}
 .chip.cw{background:var(--pink-bg);border-color:var(--pink);color:var(--pink);font-weight:500}
 .chip.cr{background:var(--red-bg);border-color:var(--red);color:var(--red);font-weight:500}
-
-/* GETUIGEN */
 .grow{display:flex;gap:6px;margin-bottom:6px;align-items:center}
-.grow input{flex:1;font-size:12px;font-family:var(--font);background:var(--cs);color:var(--ct);border:1px solid var(--bd);border-radius:var(--r);padding:6px 10px;outline:none}
-.grow input:focus{border-color:var(--blue)}
-.gdel{width:28px;height:28px;border-radius:var(--r);background:var(--red-bg);border:1px solid var(--red-br);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
-.gadd{font-size:11px;display:flex;align-items:center;gap:5px;margin-top:4px;color:var(--blue);cursor:pointer;padding:3px 0}
-.gadd svg{width:13px;height:13px}
-
-/* UPLOAD */
-.upz{border:1px dashed var(--bdm);border-radius:var(--rl);padding:18px;text-align:center;cursor:pointer;transition:all .18s;background:var(--cs)}
-.upz:hover{border-color:var(--blue);background:var(--blue-bg)}
-.upz svg{width:22px;height:22px;stroke:var(--cm);display:block;margin:0 auto 6px;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.upz:hover svg{stroke:var(--blue)}.upz p{font-size:12px;color:var(--cm)}.upz small{font-size:10px;color:var(--cf)}
-.fitem{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--cr);border:1px solid var(--bd);border-radius:var(--r);margin-top:6px;font-size:11.5px}
-.fitem svg{width:14px;height:14px;stroke:var(--blue);flex-shrink:0;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.grow input{flex:1;font-size:12px;font-family:inherit;background:var(--wit);color:var(--tekst);border:1px solid var(--border);border-radius:var(--r);padding:5px 9px;outline:none}
+.grow input:focus{border-color:var(--blauw-l)}
+.gdel{width:26px;height:26px;border-radius:var(--r);background:var(--red-bg);border:1px solid var(--red-br);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.gadd{font-size:11px;display:flex;align-items:center;gap:4px;margin-top:4px;color:var(--blauw-l);cursor:pointer}
+.gadd:hover{opacity:.75}
+.upz{border:1px dashed var(--border);border-radius:var(--rl);padding:16px;text-align:center;cursor:pointer;transition:all .15s;background:var(--wit)}
+.upz:hover{border-color:var(--blauw-l);background:var(--blauw-bg)}
+.upz p{font-size:12px;color:var(--muted)}.upz small{font-size:10px;color:#aab}
+.fitem{display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);margin-top:5px;font-size:11.5px}
 .fitem span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fenc{font-size:9.5px;color:var(--grn);display:flex;align-items:center;gap:3px}
-.fdel{background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;padding:2px}
-
-/* CONSENT */
-.cbox{background:var(--cs);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px}
-.crow{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}.crow:last-child{margin-bottom:0}
-.crow input[type=checkbox]{margin-top:2px;accent-color:var(--blue);cursor:pointer;flex-shrink:0}
-.crow label{font-size:11.5px;color:var(--cm);line-height:1.6;cursor:pointer}
-.crow label a{color:var(--blue);text-decoration:underline;cursor:pointer}
-
-/* SUCCESS */
-.sbox{text-align:center;padding:40px 20px}
-.sbox svg{width:52px;height:52px;display:block;margin:0 auto 14px;fill:none;stroke:var(--grn);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.sbox-t{font-size:18px;font-weight:600;margin-bottom:6px}
-.sbox-s{font-size:12.5px;color:var(--cm);margin-bottom:18px;line-height:1.7}
-.rpill{display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:500;padding:6px 16px;border-radius:20px;border:1px solid}
-.rpill.v{background:var(--blue-bg);border-color:var(--blue-br);color:var(--blue)}
+.fenc{font-size:9.5px;color:var(--grn);display:flex;align-items:center;gap:2px}
+.fdel{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:2px}
+.cbox{background:var(--wit);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px}
+.crow{display:flex;gap:9px;align-items:flex-start;margin-bottom:8px}.crow:last-child{margin-bottom:0}
+.crow input[type=checkbox]{margin-top:2px;accent-color:var(--blauw);cursor:pointer;flex-shrink:0}
+.crow label{font-size:11.5px;color:var(--muted);line-height:1.6;cursor:pointer}
+.crow label a{color:var(--blauw-l);text-decoration:underline;cursor:pointer}
+.sbox{text-align:center;padding:36px 18px}
+.sbox-ic{font-size:40px;display:block;margin-bottom:12px}
+.sbox-t{font-size:17px;font-weight:600;margin-bottom:5px}
+.sbox-s{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7}
+.rpill{display:inline-block;font-family:'Courier New',monospace;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1px solid}
+.rpill.v{background:var(--grn-bg);border-color:var(--grn-br);color:var(--grn)}
 .rpill.w{background:var(--pink-bg);border-color:var(--pink-br);color:var(--pink)}
 .rpill.i{background:var(--ora-bg);border-color:var(--ora-br);color:var(--ora)}
 .rpill.r{background:var(--red-bg);border-color:var(--red-br);color:var(--red)}
-
-/* DETAIL CARD */
-.dcard{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 18px;margin-bottom:12px}
-.dc-h{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px}
-.dc-t{font-size:15px;font-weight:600;letter-spacing:-.01em}
-.dc-m{font-size:11px;color:var(--cm);margin-top:3px}
-.dc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.dcf label{font-size:9.5px;color:var(--cm);text-transform:uppercase;letter-spacing:.07em;font-weight:600;display:block;margin-bottom:3px}
-.dcf p{font-size:12.5px}.dcf p.warn{color:var(--red);font-weight:500}
-.abar{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)}
-
-/* STATUS STEPS */
-.steps{display:flex;margin-bottom:16px}
-.step{flex:1;text-align:center;padding:8px 4px;font-size:10.5px;font-weight:500;border-bottom:2px solid var(--bd);color:var(--cf)}
-.step.done{border-bottom-color:var(--grn);color:var(--grn)}.step.cur{border-bottom-color:var(--blue);color:var(--blue)}
-
-/* NOTIFICATIONS */
-.nitem{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd);align-items:flex-start}
-.nitem:last-child{border-bottom:none}
-.ndotc{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.nd-r{background:var(--red)}.nd-a{background:var(--amb)}.nd-p{background:var(--blue)}.nd-g{background:var(--grn)}
-.nt{flex:1;font-size:12px;line-height:1.5}
-.nm{font-size:10.5px;color:var(--cm);white-space:nowrap;font-family:var(--mono)}
-
-/* BAR CHART */
-.bar-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cm);margin-bottom:10px}
-.brow2{display:flex;align-items:center;gap:9px;margin-bottom:7px}
-.blbl{font-size:11px;color:var(--cm);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.btrack{flex:1;background:var(--cr);border-radius:3px;height:13px;overflow:hidden}
-.bfill{height:100%;border-radius:3px;transition:width .5s ease}
-.bval{font-size:11px;font-weight:600;width:22px;text-align:right;font-family:var(--mono)}
-
-/* WERKOPDRACHTEN */
-.wo{border:1px solid var(--bd);border-radius:var(--rl);padding:11px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;background:var(--cr)}
-.wo svg{width:18px;height:18px;flex-shrink:0;margin-top:1px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.wo-b{flex:1;min-width:0}.wo-t{font-size:12.5px;font-weight:500;margin-bottom:2px}.wo-s{font-size:11px;color:var(--cm)}
-
-/* GDPR PANEL */
-.gp{border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden}
-.gi{padding:13px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;gap:12px}
-.gi:last-child{border-bottom:none}
-.gi-ic{width:32px;height:32px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.gi-ic svg{width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.gi-b{flex:1}.gi-t{font-size:12.5px;font-weight:600;margin-bottom:3px}
-.gi-d{font-size:11px;color:var(--cm);line-height:1.6}
-
-/* TECH */
-.si{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px}
-.si-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.si-ic{width:32px;height:32px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.si-ic svg{width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.si-t{font-size:13px;font-weight:600;flex:1}
-.si-d{font-size:11.5px;color:var(--cm);line-height:1.6}
-.si-code{margin-top:10px;padding:10px 12px;background:#f0f4f8;border:1px solid var(--bd);border-radius:var(--r);font-size:11px;font-family:var(--mono);color:#2a4a8a;white-space:pre-wrap;line-height:1.7;overflow-x:auto}
-.fdiag{display:flex;align-items:center;flex-wrap:wrap;margin:12px 0;gap:0}
-.fn{background:var(--cr);border:1px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:11.5px;font-weight:500;text-align:center;min-width:90px}
-.fa{color:var(--cm);font-size:16px;padding:0 5px}
-.fn.fnb{border-color:var(--blue-br);color:var(--blue);background:var(--blue-bg)}
-.fn.fng{border-color:var(--grn-br);color:var(--grn);background:var(--grn-bg)}
-.fn.fna{border-color:var(--amb-br);color:var(--amb);background:var(--amb-bg)}
+.tw{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+th{text-align:left;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 11px;border-bottom:1px solid var(--border);background:#f8f9fb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td{padding:8px 11px;border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
+.cl{color:var(--blauw-l);cursor:pointer;font-weight:500;font-family:'Courier New',monospace;font-size:11px}.cl:hover{text-decoration:underline}
+.login-wrap{display:flex;align-items:center;justify-content:center;height:100%;background:var(--bg)}
+.login-card{background:var(--wit);border:1px solid var(--border);border-radius:var(--rl);padding:36px 40px;text-align:center;max-width:360px;width:100%}
+.login-ic{font-size:36px;margin-bottom:12px}
+.login-t{font-size:18px;font-weight:600;color:var(--blauw);margin-bottom:4px}
+.login-s{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.login-scholen{font-size:11px;color:#aab;margin-bottom:16px;line-height:1.6}
 </style>
-<!-- SIDEBAR -->
-<div class="shell">
+</head>
+<body>
+
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-ic">🛡</div>
+    <div class="login-t">LON-Meldpunt 2026</div>
+    <div class="login-s">Digitaal meldpunt voor Scholengroep Londerzeel BaO.<br>Meld aan met jouw Microsoft 365-schoolaccount.</div>
+    <div class="login-scholen">CS Lijsterstraat · CS Stationsstraat<br>Kouterschool · School Ter Elst</div>
+    <button class="btn btn-p" style="width:100%;justify-content:center;font-size:13px;padding:9px 0" onclick="login()">Aanmelden met Microsoft 365</button>
+    <p style="margin-top:12px;font-size:10.5px;color:#aab"><a href="gdpr.html" style="color:var(--blauw-l)">Privacy & GDPR-informatie</a></p>
+  </div>
+</div>
+<div class="shell" id="app" style="display:none">
 <nav class="sb">
   <div class="sb-logo">
-    <div class="sb-mark"><div class="sb-ic"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.25 3.75 10.2 9 11.4C17.25 22.2 21 17.25 21 12V7L12 2z"/></svg></div><div class="sb-name">Meldpunt LON</div></div>
-    <div class="sb-sub">Veiligheid · Welzijn · Incidenten</div>
+    <div class="sb-mark"><div class="sb-ic">🛡</div><div><div class="sb-t">LON-Meldpunt 2026</div></div></div>
+    <div class="sb-s">Scholengroep Londerzeel BaO</div>
   </div>
-  <div class="nav-sec">
-    <div class="nav-lbl">Meldingen</div>
-    <div class="ni nv" id="nav-aangifte" onclick="show('aangifte')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Snelle aangifte</span></div>
-    <div class="ni nv" id="nav-mijn" onclick="show('mijn')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span>Mijn meldingen</span></div>
-  </div>
-  <div class="nav-sec">
-    <div class="nav-lbl">Veiligheid</div>
-    <div class="ni nv" id="nav-veiligheid" onclick="show('veiligheid')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Overzicht</span></div>
-    <div class="ni nv" id="nav-ao" onclick="show('ao')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg><span>Arbeidsongevallen</span></div>
-    <div class="ni nv" id="nav-risico" onclick="show('risico')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Risico-meldingen</span></div>
-  </div>
-  <div class="nav-sec">
-    <div class="nav-lbl">Welzijn</div>
-    <div class="ni nw" id="nav-welzijn" onclick="show('welzijn')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Overzicht</span><span class="nlck">🔒</span></div>
-    <div class="ni nw" id="nav-pest" onclick="show('pest')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg><span>Pestgedrag</span></div>
-    <div class="ni nw" id="nav-psycho" onclick="show('psycho')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Psychosociaal</span></div>
-    <div class="ni nw" id="nav-gog" onclick="show('gog')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="12" x2="15" y2="12"/></svg><span>Grensoverschrijdend</span></div>
-  </div>
-  <div class="nav-sec">
-    <div class="nav-lbl">Incidenten</div>
-    <div class="ni ni2" id="nav-incidenten" onclick="show('incidenten')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Overzicht</span></div>
-    <div class="ni ni2" id="nav-agressie" onclick="show('agressie')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg><span>Agressie</span><span class="ndot"></span></div>
-    <div class="ni ni2" id="nav-escalatie" onclick="show('esc-detail')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Escalaties</span><span class="ndot"></span></div>
-  </div>
-  <div class="nav-sec">
-    <div class="nav-lbl">Beheer</div>
-    <div class="ni nb" id="nav-dashboard" onclick="show('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Dashboard</span></div>
-    <div class="ni nb" id="nav-werkopdrachten" onclick="show('werkopdrachten')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span>Werkopdrachten</span></div>
-    <div class="ni nb" id="nav-rapportering" onclick="show('rapportering')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Rapportering</span></div>
-    <div class="ni nb" id="nav-gdpr" onclick="show('gdpr')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>GDPR &amp; Privacy</span></div>
-    <div class="ni nb" id="nav-technisch" onclick="show('technisch')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>Technische setup</span></div>
-    <div class="ni nb" id="nav-notificaties" onclick="show('notificaties')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Notificaties</span><span class="ndot"></span></div>
-  </div>
+  <div class="nav-lbl">Meldingen</div>
+  <div class="ni nv active" id="nav-aangifte" onclick="show('aangifte')"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Snelle aangifte</div>
+  <div class="ni nv" id="nav-mijn" onclick="show('mijn')"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Mijn meldingen</div>
+  <div class="nav-lbl">Veiligheid</div>
+  <div class="ni nv" id="nav-veiligheid" onclick="show('veiligheid')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Overzicht</div>
+  <div class="nav-lbl">Welzijn</div>
+  <div class="ni nw" id="nav-welzijn" onclick="show('welzijn')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Overzicht<span class="nlck">🔒</span></div>
+  <div class="nav-lbl">Incidenten</div>
+  <div class="ni ni2" id="nav-incidenten" onclick="show('incidenten')"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Overzicht<span class="ndot"></span></div>
+  <div class="nav-lbl">Info</div>
+  <div class="ni" id="nav-gdpr" onclick="window.open('gdpr.html','_blank')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy & GDPR</div>
+  <div class="ni" id="nav-beheer" onclick="window.open('beheer.html','_self')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Beheerspaneel</div>
   <div class="role-bar">
-    <div class="role-top"><div class="av av-a" id="rav">DL</div><div><div class="rn" id="rn">Directie</div><div class="rs" id="rs">Centrumschool</div></div></div>
-    <select class="rsel" onchange="changeRole(this.value)">
-      <option value="admin">Directie / admin</option><option value="zorg">Zorgcoördinator</option><option value="personeel">Personeelslid</option>
+    <div class="role-top"><div class="av" id="i-av">?</div><div><div class="rn" id="i-naam">—</div><div class="rs" id="i-school">—</div></div></div>
+    <select class="rsel" id="i-school-sel" onchange="changeSchool(this.value)">
+      <option value="csl">CS Lijsterstraat</option>
+      <option value="css">CS Stationsstraat</option>
+      <option value="ko">Kouterschool</option>
+      <option value="te">School Ter Elst</option>
     </select>
-    <select class="rsel" onchange="changeSchool(this.value)">
-      <option value="cs-l">Centrumschool — Lijsterstraat</option><option value="cs-s">Centrumschool — Stationsstraat</option><option value="ko">Kouterschool</option><option value="te">School Ter Elst</option>
-    </select>
+    <button class="btn btn-sm" style="width:100%;justify-content:center;margin-top:4px" onclick="logout()">Afmelden</button>
   </div>
 </nav>
 
-<!-- MAIN -->
 <div class="main">
   <div class="topbar">
-    <div class="tb-l"><span class="tb-t" id="tb-t">Dashboard</span><span class="badge b-blue" id="tb-b">LON</span></div>
-    <div class="tb-r"><span class="sp" id="sp">CS — Lijsterstraat</span><button class="btn btn-p btn-sm" onclick="show('aangifte')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nieuwe melding</button></div>
+    <div class="tb-l"><span class="tb-t" id="tb-t">Snelle aangifte</span><span class="badge b-blue" id="tb-b">melding</span></div>
+    <div style="display:flex;gap:7px"><button class="btn btn-sm btn-p" onclick="show('aangifte')">+ Nieuwe melding</button></div>
   </div>
   <div class="content">
-<!-- DASHBOARD -->
-<div class="screen active" id="screen-dashboard">
-  <div class="kgrid">
-    <div class="kpi"><div class="kpi-l">Totaal meldingen LON</div><div class="kpi-v kv-b">58</div></div>
-    <div class="kpi"><div class="kpi-l">Open dossiers</div><div class="kpi-v kv-a">11</div></div>
-    <div class="kpi"><div class="kpi-l">Afgewerkt dit jaar</div><div class="kpi-v kv-g">41</div></div>
-    <div class="kpi"><div class="kpi-l">Escalaties actief</div><div class="kpi-v kv-r">2</div></div>
-  </div>
-  <div class="sgrid">
-    <div class="sk cs"><div class="sk-l">CS Lijsterstraat</div><div class="sk-v">18</div></div>
-    <div class="sk cs"><div class="sk-l">CS Stationsstraat</div><div class="sk-v">14</div></div>
-    <div class="sk ko"><div class="sk-l">Kouterschool</div><div class="sk-v">16</div></div>
-    <div class="sk te"><div class="sk-l">School Ter Elst</div><div class="sk-v">10</div></div>
-  </div>
-  <div class="pgrid">
-    <div class="pc pv" onclick="show('veiligheid')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><div class="pc-t">Veiligheid</div><div class="pc-s">Arbeidsongevallen · EHBO · Risico's · Leerlingen</div><div class="pc-n">24</div></div>
-    <div class="pc pw" onclick="show('welzijn')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><div class="pc-t">Welzijn</div><div class="pc-s">Pestgedrag · Psychosociaal · GOG</div><div class="pc-n">14</div></div>
-    <div class="pc pi" onclick="show('incidenten')"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div class="pc-t">Incidenten</div><div class="pc-s">Agressie · Ongepast gedrag · Escalaties</div><div class="pc-n">20</div></div>
-  </div>
-  <div class="tw"><table><colgroup><col style="width:90px"><col style="width:140px"><col style="width:100px"><col style="width:130px"><col style="width:95px"></colgroup>
-    <tr><th>Ref</th><th>Betrokkene</th><th>Type</th><th>School</th><th>Status</th></tr>
-    <tr><td class="cl" onclick="show('ao-detail')">AO-2026-05</td><td>Wim Cools</td><td>Arbeidsongeval</td><td>CS Lijsterstraat</td><td><span class="badge b-amb">In behandeling</span></td></tr>
-    <tr><td class="cl" onclick="show('esc-detail')">ES-2026-02</td><td>—</td><td>Escalatie</td><td>CS Stationsstraat</td><td><span class="badge b-red">Dringend</span></td></tr>
-    <tr><td class="cl">WE-2026-07</td><td>Anoniem</td><td>Psychosociaal</td><td>Kouterschool</td><td><span class="badge b-pink">Vertrouwelijk</span></td></tr>
-    <tr><td class="cl">RI-2026-04</td><td>—</td><td>Risico (kritiek)</td><td>School Ter Elst</td><td><span class="badge b-red">Openstaand</span></td></tr>
-    <tr><td class="cl">AG-2026-03</td><td>—</td><td>Agressie</td><td>Kouterschool</td><td><span class="badge b-amb">In behandeling</span></td></tr>
-  </table></div>
-</div>
 
-<!-- SNELLE AANGIFTE -->
-<div class="screen" id="screen-aangifte">
-  <div id="keuze">
-    <div class="alert al-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Persoonsgegevens worden verwerkt conform GDPR/AVG (EU 2016/679). Vertrouwelijke meldingen zijn enkel zichtbaar voor bevoegde personen. <a onclick="show('gdpr')">Meer info</a></span></div>
-    <div class="fsec" style="margin-bottom:14px"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>School en vestiging</div>
-      <div class="frow"><div class="ff"><label>Kies jouw school</label><select><option>Centrumschool — Lijsterstraat</option><option>Centrumschool — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div></div>
-    </div>
-    <div class="tsl lv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Veiligheid</div>
-    <div class="tgrid">
-      <div class="tc" onclick="selType('AO','sv',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg><div class="tc-t">Arbeidsongeval</div><div class="tc-s">Letsel tijdens werk of woon-werkverkeer</div></div>
-      <div class="tc" onclick="selType('EH','sv',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><div class="tc-t">EHBO</div><div class="tc-s">Eerste hulp zonder arts of verzuim</div></div>
-      <div class="tc" onclick="selType('LO','sv',this)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><div class="tc-t">Leerlingongeval</div><div class="tc-s">Incident met letsel bij een leerling</div></div>
-      <div class="tc" onclick="selType('RI','sv',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div class="tc-t">Risico-melding</div><div class="tc-s">Gevaarlijke situatie, geen letsel</div></div>
-    </div>
-    <div class="tsl lw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Welzijn <span class="tsl-n">(enkel directie en zorgcoördinator)</span></div>
-    <div class="tgrid">
-      <div class="tc" onclick="selType('PE','sw',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg><div class="tc-t">Pestgedrag</div><div class="tc-s">Pesten leerling of collega</div></div>
-      <div class="tc" onclick="selType('PS','sw',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div class="tc-t">Psychosociaal</div><div class="tc-s">Burn-out, hoge werkdruk, stress</div></div>
-      <div class="tc" onclick="selType('GO','sw',this)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="12" x2="15" y2="12"/></svg><div class="tc-t">Grensoverschrijdend gedrag</div><div class="tc-s">Intimidatie, GOG, ongewenst gedrag</div></div>
-    </div>
-    <div class="tsl li"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Incidenten</div>
-    <div class="tgrid">
-      <div class="tc" onclick="selType('AG','si',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg><div class="tc-t">Agressie door derden</div><div class="tc-s">Ouder, bezoeker, externe persoon</div></div>
-      <div class="tc" onclick="selType('OB','si',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg><div class="tc-t">Ongepast gedrag bezoeker</div><div class="tc-s">Overlast, intimidatie door externe</div></div>
-      <div class="tc" onclick="selType('ES','sr',this)"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><div class="tc-t">Escalatie — DRINGEND</div><div class="tc-s">Onmiddellijke actie vereist</div></div>
-    </div>
-  </div>
-
-  <!-- FORM AO -->
-  <div id="form-AO" class="form-body" style="display:none">
-    <div class="alert al-a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Arbeidsongeval — AGODI-aangifte vereist binnen 8 kalenderdagen indien arts geraadpleegd.</div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Basisgegevens</div>
-      <div class="frow">
-        <div class="ff"><label>School / vestiging</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div>
-        <div class="ff"><label>Datum van het ongeval</label><input type="date" value="2026-06-05"></div>
-        <div class="ff"><label>Tijdstip</label><input type="time" value="09:30"></div>
+  <!-- AANGIFTE -->
+  <div class="screen active" id="screen-aangifte">
+    <div id="keuze">
+      <div class="alert al-b"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:1px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Persoonsgegevens worden verwerkt conform GDPR/AVG. Vertrouwelijke meldingen zijn enkel zichtbaar voor bevoegde personen. <a onclick="window.open('gdpr.html','_blank')">Meer info</a></span></div>
+      <div class="fsec" style="margin-bottom:14px"><div class="fsec-t">Jouw school</div>
+        <div class="frow"><div class="ff"><label>School / vestiging</label>
+          <select id="school-form"><option value="csl">Centrumschool — Lijsterstraat</option><option value="css">Centrumschool — Stationsstraat</option><option value="ko">Kouterschool</option><option value="te">School Ter Elst</option></select>
+        </div></div>
       </div>
-      <div class="frow">
-        <div class="ff"><label>Naam personeelslid</label><input type="text" placeholder="Voornaam Naam"><div class="fnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Persoonsgegevens — versleuteld opgeslagen</div></div>
-        <div class="ff"><label>Functie</label><select><option>Leerkracht</option><option>Zorgleerkracht</option><option>Directie</option><option>Onderhoud</option><option>Administratie</option><option>Andere</option></select></div>
+      <div class="tsl lv">🛡 Veiligheid</div>
+      <div class="tgrid">
+        <div class="tc" onclick="selType('AO','sv',this)"><span class="tc-ic">🦺</span><div class="tc-t">Arbeidsongeval</div><div class="tc-s">Letsel tijdens werk of woon-werkverkeer</div></div>
+        <div class="tc" onclick="selType('EH','sv',this)"><span class="tc-ic">➕</span><div class="tc-t">EHBO</div><div class="tc-s">Eerste hulp zonder arts of verzuim</div></div>
+        <div class="tc" onclick="selType('LO','sv',this)"><span class="tc-ic">🎒</span><div class="tc-t">Leerlingongeval</div><div class="tc-s">Incident met letsel bij leerling</div></div>
+        <div class="tc" onclick="selType('RI','sv',this)"><span class="tc-ic">⚠️</span><div class="tc-t">Risico-melding</div><div class="tc-s">Gevaarlijke situatie, geen letsel</div></div>
       </div>
-      <div class="frow">
-        <div class="ff"><label>Locatie van het ongeval</label><select><option>Speelplaats</option><option>Klas</option><option>Sportzaal</option><option>Gang / trap</option><option>Keuken / refter</option><option>Woon-werkverkeer</option><option>Schooluitstap</option><option>Andere</option></select></div>
-        <div class="ff"><label>Type traject</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Op school</span><span class="chip" onclick="cSel(this)">Woon-werk</span><span class="chip" onclick="cSel(this)">Schooluitstap</span></div></div>
+      <div class="tsl lw">💙 Welzijn <span class="tsl-n">(rol-afhankelijk)</span></div>
+      <div class="tgrid">
+        <div class="tc" onclick="selType('PE','sw',this)"><span class="tc-ic">😔</span><div class="tc-t">Pestgedrag</div><div class="tc-s">Pesten leerling of collega</div></div>
+        <div class="tc" onclick="selType('PS','sw',this)"><span class="tc-ic">🧠</span><div class="tc-t">Psychosociaal</div><div class="tc-s">Burn-out, hoge werkdruk, stress</div></div>
+        <div class="tc" onclick="selType('GO','sw',this)"><span class="tc-ic">🚫</span><div class="tc-t">Grensoverschrijdend</div><div class="tc-s">GOG, intimidatie, ongewenst gedrag</div></div>
+      </div>
+      <div class="tsl li">🚨 Incidenten</div>
+      <div class="tgrid">
+        <div class="tc" onclick="selType('AG','si',this)"><span class="tc-ic">😤</span><div class="tc-t">Agressie door derden</div><div class="tc-s">Ouder, bezoeker, externe persoon</div></div>
+        <div class="tc" onclick="selType('OB','si',this)"><span class="tc-ic">🚷</span><div class="tc-t">Ongepast gedrag bezoeker</div><div class="tc-s">Overlast door externe</div></div>
+        <div class="tc" onclick="selType('ES','sr',this)"><span class="tc-ic">🆘</span><div class="tc-t">Escalatie — DRINGEND</div><div class="tc-s">Onmiddellijke actie vereist</div></div>
       </div>
     </div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Omschrijving en letsel</div>
-      <div class="frow"><div class="ff"><label>Omschrijving van het ongeval</label><textarea placeholder="Beschrijf hoe het ongeval is gebeurd, de omstandigheden en de volgorde van gebeurtenissen..."></textarea></div></div>
-      <div class="frow">
-        <div class="ff"><label>Aard van het letsel</label><input type="text" placeholder="bv. kneuzing, breuk, snijwonde..."></div>
-        <div class="ff"><label>Aangetast lichaamsdeel</label><select><option>Hoofd / nek</option><option>Schouder</option><option>Arm / elleboog</option><option>Pols / hand</option><option>Rug / lenden</option><option>Knie</option><option>Enkel / voet</option><option>Meerdere</option><option>Andere</option></select></div>
+
+    <!-- FORM AO -->
+    <div id="form-AO" class="form-body" style="display:none">
+      <div class="alert al-a">⚠️ Arbeidsongeval — AGODI-aangifte vereist binnen 8 kalenderdagen indien arts geraadpleegd.</div>
+      <div class="fsec"><div class="fsec-t">Basisgegevens</div>
+        <div class="frow"><div class="ff"><label>School</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Datum</label><input type="date" id="ao-datum"></div><div class="ff"><label>Tijdstip</label><input type="time" value="09:00"></div></div>
+        <div class="frow"><div class="ff"><label>Naam personeelslid</label><input type="text" id="ao-naam" placeholder="Voornaam Naam"><div class="fnote">🔒 Persoonsgegevens — versleuteld opgeslagen</div></div><div class="ff"><label>Functie</label><select><option>Leerkracht</option><option>Zorgleerkracht</option><option>Directie</option><option>Onderhoud</option><option>Administratie</option><option>Andere</option></select></div></div>
+        <div class="frow"><div class="ff"><label>Locatie</label><select id="ao-locatie"><option>Speelplaats</option><option>Klas</option><option>Sportzaal</option><option>Gang / trap</option><option>Keuken / refter</option><option>Woon-werkverkeer</option><option>Schooluitstap</option><option>Andere</option></select></div><div class="ff"><label>Type traject</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Op school</span><span class="chip" onclick="cSel(this)">Woon-werk</span><span class="chip" onclick="cSel(this)">Schooluitstap</span></div></div></div>
       </div>
-      <div class="frow">
-        <div class="ff"><label>Verwachte afwezigheid</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Geen</span><span class="chip" onclick="cSel(this)">&lt; 1 week</span><span class="chip" onclick="cSel(this)">1–4 weken</span><span class="chip" onclick="cSel(this)">&gt; 4 weken</span></div></div>
-        <div class="ff"><label>Arts geraadpleegd?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja — AGODI vereist</span><span class="chip cs" onclick="cSel(this)">Nee</span></div></div>
+      <div class="fsec"><div class="fsec-t">Omschrijving en letsel</div>
+        <div class="frow"><div class="ff"><label>Omschrijving van het ongeval</label><textarea id="ao-omschr" placeholder="Beschrijf hoe het ongeval is gebeurd, de omstandigheden en de volgorde van gebeurtenissen..."></textarea></div></div>
+        <div class="frow"><div class="ff"><label>Aard van het letsel</label><input type="text" id="ao-letsel" placeholder="bv. kneuzing, breuk, snijwonde..."></div><div class="ff"><label>Aangetast lichaamsdeel</label><select><option>Hoofd / nek</option><option>Schouder</option><option>Arm / elleboog</option><option>Pols / hand</option><option>Rug / lenden</option><option>Knie</option><option>Enkel / voet</option><option>Meerdere</option><option>Andere</option></select></div></div>
+        <div class="frow"><div class="ff"><label>Verwachte afwezigheid</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Geen</span><span class="chip" onclick="cSel(this)">&lt; 1 week</span><span class="chip" onclick="cSel(this)">1–4 weken</span><span class="chip" onclick="cSel(this)">&gt; 4 weken</span></div></div><div class="ff"><label>Arts geraadpleegd?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja — AGODI vereist</span><span class="chip cs" onclick="cSel(this)">Nee</span></div></div></div>
+      </div>
+      <div class="fsec"><div class="fsec-t">Getuigen (optioneel)</div>
+        <div id="gao"><div class="grow"><input type="text" placeholder="Naam getuige 1"><button class="gdel" onclick="this.parentNode.remove()">×</button></div></div>
+        <div class="gadd" onclick="addG('gao')">+ Getuige toevoegen</div>
+        <div class="fnote" style="margin-top:6px">🔒 Getuigengegevens worden vertrouwelijk bewaard voor dossieropvolging</div>
+      </div>
+      <div class="fsec"><div class="fsec-t">Bijlagen — medisch attest, foto letsel</div>
+        <div class="upz" onclick="addF('fao','Medisch attest.pdf')"><p>📎 Klik om bestand toe te voegen</p><small>PDF, JPG, PNG — max 10 MB · meerdere bestanden mogelijk</small></div>
+        <div id="fao"></div>
+        <div class="fnote" style="margin-top:5px">🔒 Medische documenten worden AES-256 versleuteld opgeslagen. Toegang beperkt tot directie en verzekeringsadviseur.</div>
+      </div>
+      <div class="fsec"><div class="fsec-t">GDPR-toestemming</div>
+        <div class="cbox">
+          <div class="crow"><input type="checkbox" id="c1" checked><label for="c1">Ik bevestig dat de ingevoerde gegevens correct zijn en geef toestemming voor verwerking conform het <a onclick="window.open('gdpr.html','_blank')">privacybeleid van LON</a>.</label></div>
+          <div class="crow"><input type="checkbox" id="c2"><label for="c2">Ik geef toestemming voor het doorsturen van relevante gegevens aan AGODI en verzekeringsmaatschappij Ethias in het kader van de aangifte.</label></div>
+          <div class="crow"><input type="checkbox" id="c3"><label for="c3">Ik begrijp dat medische bijlagen worden verwijderd conform de bewaartermijnen (consolidatie + 1 jaar).</label></div>
+        </div>
+      </div>
+      <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('AO','v')">📤 Arbeidsongeval indienen</button></div>
+    </div>
+
+    <!-- FORM EH -->
+    <div id="form-EH" class="form-body" style="display:none">
+      <div class="fsec"><div class="fsec-t">EHBO-registratie</div>
+        <div class="frow"><div class="ff"><label>School</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Datum</label><input type="date"></div><div class="ff"><label>Tijdstip</label><input type="time" value="10:00"></div></div>
+        <div class="frow"><div class="ff"><label>Naam betrokkene</label><input type="text" placeholder="Voornaam Naam"><div class="fnote">🔒 Persoonsgegevens — beveiligd</div></div><div class="ff"><label>Hoedanigheid</label><select><option>Personeelslid</option><option>Leerling</option><option>Bezoeker</option></select></div></div>
+        <div class="frow"><div class="ff"><label>Omschrijving / EHBO-handelingen</label><textarea placeholder="Welke eerste hulp is verleend? Wat was de aanleiding?"></textarea></div></div>
+        <div class="frow"><div class="ff"><label>Verzorgd door</label><input type="text" placeholder="Naam EHBO-verantwoordelijke"></div><div class="ff"><label>Doorverwezen naar arts?</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee — enkel EHBO</span><span class="chip" onclick="cSel(this)">Ja → arbeidsongeval</span></div></div></div>
+      </div>
+      <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('EH','v')">✅ EHBO registreren</button></div>
+    </div>
+
+    <!-- FORM LO -->
+    <div id="form-LO" class="form-body" style="display:none">
+      <div class="alert al-a">⚠️ Ouders moeten binnen 24u verwittigd worden. Bij medische tussenkomst is een verzekeringsmelding vereist.</div>
+      <div class="fsec"><div class="fsec-t">Leerlinggegevens</div>
+        <div class="frow"><div class="ff"><label>School / klas</label><input type="text" placeholder="bv. CS Lijsterstraat — 3A"></div><div class="ff"><label>Datum</label><input type="date"></div><div class="ff"><label>Tijdstip</label><input type="time" value="11:00"></div></div>
+        <div class="frow"><div class="ff"><label>Naam leerling</label><input type="text" placeholder="Voornaam Naam"><div class="fnote">🔒 Minderjarige — extra GDPR-bescherming (art. 8 AVG)</div></div><div class="ff"><label>Geboortejaar</label><input type="number" placeholder="bv. 2016" min="2000" max="2024"></div></div>
+        <div class="frow"><div class="ff"><label>Omschrijving van het incident</label><textarea placeholder="Hoe is het incident ontstaan?"></textarea></div></div>
+        <div class="frow"><div class="ff"><label>Aard van het letsel</label><input type="text" placeholder="bv. schaafwonde, verstuiking..."></div><div class="ff"><label>Medische tussenkomst</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee / EHBO</span><span class="chip" onclick="cSel(this)">Huisarts</span><span class="chip" onclick="cSel(this)">Hospitaal</span></div></div></div>
+        <div class="frow"><div class="ff"><label>Ouders verwittigd?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja</span><span class="chip cs" onclick="cSel(this)">Nog te doen</span></div></div><div class="ff"><label>Verzekeringsmelding?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja</span><span class="chip cs" onclick="cSel(this)">Nee</span></div></div></div>
+        <div class="frow"><div class="ff"><label>Bijlage</label><div class="upz" onclick="addF('flo','Foto letsel.jpg')"><p>📎 Foto toevoegen</p><small>JPG, PNG — max 10 MB</small></div><div id="flo"></div></div></div>
+      </div>
+      <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('LO','v')">📤 Leerlingongeval melden</button></div>
+    </div>
+
+    <!-- FORM RI -->
+    <div id="form-RI" class="form-body" style="display:none">
+      <div class="fsec"><div class="fsec-t">Risico-melding</div>
+        <div class="frow"><div class="ff"><label>School</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Locatie (nauwkeurig)</label><input type="text" placeholder="bv. gang 2e verdiep, sportzaal..."></div></div>
+        <div class="frow"><div class="ff"><label>Omschrijving van het risico</label><textarea placeholder="Beschrijf de gevaarlijke situatie zo nauwkeurig mogelijk..."></textarea></div></div>
+        <div class="frow"><div class="ff"><label>Ernst</label><div class="chips"><span class="chip" onclick="cSel(this)">Laag</span><span class="chip cs" onclick="cSel(this)">Gemiddeld</span><span class="chip" onclick="cSel(this)">Hoog</span><span class="chip cr" onclick="cSel(this)">Kritiek</span></div></div><div class="ff"><label>Onmiddellijke actie genomen?</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee</span><span class="chip" onclick="cSel(this)">Ja</span></div></div></div>
+        <div class="frow"><div class="ff"><label>Foto</label><div class="upz" onclick="addF('fri','Foto risico.jpg')"><p>📎 Foto toevoegen</p><small>JPG of PNG — max 10 MB</small></div><div id="fri"></div></div></div>
+      </div>
+      <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('RI','v')">📤 Risico melden</button></div>
+    </div>
+
+    <!-- FORM WELZIJN -->
+    <div id="form-welzijn" class="form-body" style="display:none">
+      <div class="alert al-pk">🔒 Vertrouwelijke melding — enkel zichtbaar voor directie en aangewezen zorgcoördinator van jouw school.</div>
+      <div class="fsec"><div class="fsec-t">Welzijnsmelding</div>
+        <div class="frow"><div class="ff"><label>School</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Type welzijnsmelding</label><select><option>Pestgedrag</option><option>Psychosociaal / burn-out</option><option>Grensoverschrijdend gedrag (GOG)</option></select></div></div>
+        <div class="frow"><div class="ff"><label>Anonieme situatiebeschrijving</label><textarea placeholder="Beschrijf de situatie. Vermijd namen in dit veld."></textarea></div></div>
+        <div class="frow"><div class="ff"><label>Identiteit betrokkene (strikt vertrouwelijk)</label><input type="text" placeholder="Naam betrokkene"><div class="fnote">🔒 Strikt vertrouwelijk — enkel directie en vertrouwenspersoon</div></div><div class="ff"><label>Toewijzen aan</label><select><option>Zorgcoördinator (school)</option><option>Directie</option><option>Externe vertrouwenspersoon</option><option>CLB</option></select></div></div>
+      </div>
+      <div class="fsec"><div class="fsec-t">GDPR-toestemming</div>
+        <div class="cbox"><div class="crow"><input type="checkbox" id="wc1" checked><label for="wc1">Ik bevestig dat deze vertrouwelijke melding enkel wordt verwerkt door bevoegde personen conform het <a onclick="window.open('gdpr.html','_blank')">privacybeleid van LON</a>.</label></div></div>
+      </div>
+      <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-pk" onclick="doSubmit('WE','w')">🔒 Vertrouwelijk indienen</button></div>
+    </div>
+
+    <!-- FORM INCIDENT -->
+    <div id="form-AG" class="form-body" style="display:none">
+      <div class="fsec"><div class="fsec-t">Incidentgegevens</div>
+        <div class="frow"><div class="ff"><label>School</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Datum</label><input type="date"></div><div class="ff"><label>Tijdstip</label><input type="time" value="15:30"></div></div>
+        <div class="frow"><div class="ff"><label>Type incident</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Verbale agressie</span><span class="chip" onclick="cSel(this)">Fysieke agressie</span><span class="chip" onclick="cSel(this)">Bedreiging</span><span class="chip" onclick="cSel(this)">Vandalisme</span><span class="chip" onclick="cSel(this)">Ongepast gedrag</span></div></div></div>
+        <div class="frow"><div class="ff"><label>Feitelijke omschrijving</label><textarea placeholder="Beschrijf het incident objectief en feitelijk..."></textarea></div></div>
+        <div class="frow"><div class="ff"><label>Dader — hoedanigheid</label><input type="text" placeholder="bv. ouder van leerling, bezoeker..."><div class="fnote">🔒 Enkel hoedanigheid — naam enkel indien nodig voor PV</div></div><div class="ff"><label>Betrokken medewerker</label><input type="text" placeholder="Naam personeelslid"><div class="fnote">🔒 Persoonsgegevens — beveiligd</div></div></div>
+        <div class="frow"><div class="ff"><label>Getuigen</label><div id="gag"><div class="grow"><input type="text" placeholder="Naam getuige"><button class="gdel" onclick="this.parentNode.remove()">×</button></div></div><div class="gadd" onclick="addG('gag')">+ Getuige toevoegen</div></div></div>
+        <div class="frow"><div class="ff"><label>Foto of bewijsstuk</label><div class="upz" onclick="addF('fag','Foto incident.jpg')"><p>📎 Foto of bewijsstuk</p><small>JPG, PNG, PDF — max 10 MB</small></div><div id="fag"></div></div></div>
+        <div class="frow"><div class="ff"><label>PV bij politie?</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee</span><span class="chip" onclick="cSel(this)">Ja — PV-nummer:</span></div></div></div>
+      </div>
+      <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-or" onclick="doSubmit('AG','i')">📤 Incident melden</button></div>
+    </div>
+
+    <!-- FORM ESCALATIE -->
+    <div id="form-ES" class="form-body" style="display:none">
+      <div class="alert al-r">🆘 <strong>Escalatie — directie, preventieadviseur en zorgcoördinator worden onmiddellijk verwittigd bij indiening.</strong></div>
+      <div class="fsec"><div class="fsec-t">Urgente melding</div>
+        <div class="frow"><div class="ff"><label>School</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Tijdstip (nu)</label><input type="time" id="es-t"></div></div>
+        <div class="frow"><div class="ff"><label>Korte omschrijving van de crisissituatie</label><textarea placeholder="Wat is er aan de hand? Beschrijf in 2-3 zinnen..." style="min-height:70px"></textarea></div></div>
+        <div class="frow"><div class="ff"><label>Betrokken personen</label><input type="text" placeholder="bv. 1 medewerker, ouder van leerling..."></div><div class="ff"><label>Politie al verwittigd?</label><div class="chips"><span class="chip cr" onclick="cSel(this)">Nee — bel nu 101</span><span class="chip" onclick="cSel(this)">Ja</span></div></div></div>
+      </div>
+      <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-r" onclick="doSubmit('ES','r')">🆘 Escalatie indienen</button></div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="success" style="display:none">
+      <div class="sbox">
+        <span class="sbox-ic" id="s-ic">✅</span>
+        <div class="sbox-t">Melding ingediend</div>
+        <div class="sbox-s" id="s-msg">—</div>
+        <div class="rpill v" id="s-ref">Ref: —</div>
+        <div class="brow" style="justify-content:center;margin-top:18px">
+          <button class="btn btn-p" onclick="resetA()">Nieuwe melding</button>
+          <button class="btn" onclick="show('mijn')">Mijn meldingen</button>
+        </div>
       </div>
     </div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Getuigen <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px;color:var(--cm)">(optioneel)</span></div>
-      <div id="gao"><div class="grow"><input type="text" placeholder="Naam getuige 1"><button class="gdel" onclick="this.parentNode.remove()">×</button></div></div>
-      <div class="gadd" onclick="addG('gao')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Getuige toevoegen</div>
-      <div class="fnote" style="margin-top:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Getuigengegevens worden vertrouwelijk bewaard voor dossieropvolging</div>
-    </div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Bijlagen — medisch attest, foto letsel</div>
-      <div class="upz" onclick="addF('fao','Medisch attest.pdf')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><p>Klik om bestand toe te voegen</p><small>PDF, JPG, PNG — max 10 MB · meerdere bestanden mogelijk</small></div>
-      <div id="fao"></div>
-      <div class="fnote" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Medische documenten worden AES-256 versleuteld opgeslagen. Toegang beperkt tot directie en verzekeringsadviseur.</div>
-    </div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>GDPR-toestemming</div>
-      <div class="cbox">
-        <div class="crow"><input type="checkbox" id="c1" checked><label for="c1">Ik bevestig dat de ingevoerde gegevens correct zijn en geef toestemming voor verwerking conform het <a onclick="show('gdpr')">privacybeleid van LON</a>.</label></div>
-        <div class="crow"><input type="checkbox" id="c2"><label for="c2">Ik geef toestemming voor doorsturen van relevante gegevens aan AGODI en verzekeringsmaatschappij Ethias in het kader van de aangifte.</label></div>
-        <div class="crow"><input type="checkbox" id="c3"><label for="c3">Ik begrijp dat medische bijlagen worden verwijderd conform de bewaartermijnen (consolidatie + 1 jaar).</label></div>
-      </div>
-    </div>
-    <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('AO','v')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Arbeidsongeval indienen</button></div>
   </div>
 
-  <!-- FORM EH -->
-  <div id="form-EH" class="form-body" style="display:none">
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>EHBO-registratie</div>
-      <div class="frow"><div class="ff"><label>School / vestiging</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Datum</label><input type="date" value="2026-06-05"></div><div class="ff"><label>Tijdstip</label><input type="time" value="10:00"></div></div>
-      <div class="frow"><div class="ff"><label>Naam betrokkene</label><input type="text" placeholder="Voornaam Naam"><div class="fnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Persoonsgegevens — beveiligd</div></div><div class="ff"><label>Hoedanigheid</label><select><option>Personeelslid</option><option>Leerling</option><option>Bezoeker</option></select></div></div>
-      <div class="frow"><div class="ff"><label>Omschrijving / EHBO-handelingen</label><textarea placeholder="Welke eerste hulp is verleend? Wat was de aanleiding?"></textarea></div></div>
-      <div class="frow"><div class="ff"><label>Verzorgd door</label><input type="text" placeholder="Naam EHBO-verantwoordelijke"></div><div class="ff"><label>Doorverwezen naar arts?</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee — enkel EHBO</span><span class="chip" onclick="cSel(this)">Ja → wordt arbeidsongeval</span></div></div></div>
-    </div>
-    <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('EH','v')">Registreren</button></div>
+  <!-- MIJN MELDINGEN -->
+  <div class="screen" id="screen-mijn">
+    <div class="tw"><table><colgroup><col style="width:90px"><col style="width:110px"><col style="width:80px"><col style="width:130px"><col style="width:90px"></colgroup>
+      <tr><th>Ref</th><th>Type</th><th>Pijler</th><th>Datum</th><th>Status</th></tr>
+      <tbody id="mijn-tabel"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Laden…</td></tr></tbody>
+    </table></div>
   </div>
 
-  <!-- FORM LO -->
-  <div id="form-LO" class="form-body" style="display:none">
-    <div class="alert al-a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Ouders moeten binnen 24u verwittigd worden. Bij medische tussenkomst is een verzekeringsmelding vereist.</div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Leerlinggegevens</div>
-      <div class="frow"><div class="ff"><label>School / klas</label><input type="text" placeholder="bv. CS Lijsterstraat — 3A"></div><div class="ff"><label>Datum</label><input type="date" value="2026-06-05"></div><div class="ff"><label>Tijdstip</label><input type="time" value="11:00"></div></div>
-      <div class="frow"><div class="ff"><label>Naam leerling</label><input type="text" placeholder="Voornaam Naam"><div class="fnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Minderjarige — extra GDPR-bescherming (art. 8 AVG)</div></div><div class="ff"><label>Geboortejaar</label><input type="number" placeholder="bv. 2016" min="2000" max="2024"></div></div>
-      <div class="frow"><div class="ff"><label>Omschrijving van het incident</label><textarea placeholder="Hoe is het incident ontstaan? Beschrijf de omstandigheden..."></textarea></div></div>
-      <div class="frow"><div class="ff"><label>Aard van het letsel</label><input type="text" placeholder="bv. schaafwonde, verstuiking..."></div><div class="ff"><label>Medische tussenkomst</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee / EHBO</span><span class="chip" onclick="cSel(this)">Huisarts</span><span class="chip" onclick="cSel(this)">Hospitaal</span></div></div></div>
-      <div class="frow"><div class="ff"><label>Ouders verwittigd?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja</span><span class="chip cs" onclick="cSel(this)">Nog te doen</span></div></div><div class="ff"><label>Verzekeringsmelding nodig?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja</span><span class="chip cs" onclick="cSel(this)">Nee</span></div></div></div>
-      <div class="frow"><div class="ff"><label>Bijlage (foto / verslag)</label><div class="upz" onclick="addF('flo','Foto letsel.jpg')" style="margin-top:4px"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Foto toevoegen</p><small>JPG, PNG — max 10 MB</small></div><div id="flo"></div></div></div>
-    </div>
-    <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('LO','v')">Leerlingongeval melden</button></div>
+  <!-- VEILIGHEID -->
+  <div class="screen" id="screen-veiligheid">
+    <div class="tw"><table><colgroup><col style="width:90px"><col style="width:130px"><col style="width:90px"><col style="width:120px"><col style="width:90px"></colgroup>
+      <tr><th>Ref</th><th>Personeelslid</th><th>Type</th><th>School</th><th>Status</th></tr>
+      <tbody id="v-tabel"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Laden…</td></tr></tbody>
+    </table></div>
   </div>
 
-  <!-- FORM RI -->
-  <div id="form-RI" class="form-body" style="display:none">
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Risico-melding</div>
-      <div class="frow"><div class="ff"><label>School / vestiging</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Locatie (nauwkeurig)</label><input type="text" placeholder="bv. gang 2e verdiep, sportzaal..."></div></div>
-      <div class="frow"><div class="ff"><label>Omschrijving van het risico</label><textarea placeholder="Beschrijf de gevaarlijke situatie zo nauwkeurig mogelijk..."></textarea></div></div>
-      <div class="frow"><div class="ff"><label>Ernst</label><div class="chips"><span class="chip" onclick="cSel(this)">Laag</span><span class="chip cs" onclick="cSel(this)">Gemiddeld</span><span class="chip" onclick="cSel(this)">Hoog</span><span class="chip cr" onclick="cSel(this)">Kritiek</span></div></div><div class="ff"><label>Onmiddellijke actie genomen?</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee</span><span class="chip" onclick="cSel(this)">Ja</span></div></div></div>
-      <div class="frow"><div class="ff"><label>Foto van de situatie</label><div class="upz" onclick="addF('fri','Foto risico.jpg')" style="margin-top:4px"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Foto toevoegen</p><small>JPG of PNG — max 10 MB</small></div><div id="fri"></div></div></div>
-    </div>
-    <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('RI','v')">Risico melden</button></div>
+  <!-- WELZIJN -->
+  <div class="screen" id="screen-welzijn">
+    <div class="alert al-pk">🔒 Vertrouwelijke module — uitsluitend zichtbaar voor directie en aangewezen zorgcoördinator van jouw school.</div>
+    <div class="tw"><table><colgroup><col style="width:90px"><col style="width:100px"><col style="width:120px"><col style="width:110px"><col style="width:90px"></colgroup>
+      <tr><th>Ref</th><th>Type</th><th>School</th><th>Toegewezen</th><th>Status</th></tr>
+      <tbody id="w-tabel"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Laden…</td></tr></tbody>
+    </table></div>
   </div>
 
-  <!-- FORM WELZIJN -->
-  <div id="form-welzijn" class="form-body" style="display:none">
-    <div class="alert al-pk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Vertrouwelijke melding — enkel zichtbaar voor directie en aangewezen zorgcoördinator van de betreffende school.</div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Welzijnsmelding</div>
-      <div class="frow"><div class="ff"><label>School / vestiging</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Type welzijnsmelding</label><select><option>Pestgedrag</option><option>Psychosociaal / burn-out</option><option>Grensoverschrijdend gedrag (GOG)</option></select></div></div>
-      <div class="frow"><div class="ff"><label>Anonieme situatiebeschrijving</label><textarea placeholder="Beschrijf de situatie. Vermijd namen in dit veld — identiteit wordt apart en beveiligd opgeslagen."></textarea></div></div>
-      <div class="frow"><div class="ff"><label>Identiteit betrokkene (strikt vertrouwelijk)</label><input type="text" placeholder="Naam betrokkene"><div class="fnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Strikt vertrouwelijk — enkel directie en vertrouwenspersoon</div></div><div class="ff"><label>Dossier toewijzen aan</label><select><option>Zorgcoördinator (school)</option><option>Directie</option><option>Externe vertrouwenspersoon</option><option>CLB</option></select></div></div>
-    </div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>GDPR-toestemming</div>
-      <div class="cbox"><div class="crow"><input type="checkbox" id="wc1" checked><label for="wc1">Ik bevestig dat deze vertrouwelijke melding enkel wordt verwerkt door bevoegde personen conform het <a onclick="show('gdpr')">privacybeleid van LON</a>.</label></div></div>
-    </div>
-    <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-pk" onclick="doSubmit('WE','w')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Vertrouwelijk indienen</button></div>
+  <!-- INCIDENTEN -->
+  <div class="screen" id="screen-incidenten">
+    <div class="tw"><table><colgroup><col style="width:90px"><col style="width:140px"><col style="width:90px"><col style="width:120px"><col style="width:90px"></colgroup>
+      <tr><th>Ref</th><th>Omschrijving</th><th>Type</th><th>School</th><th>Status</th></tr>
+      <tbody id="i-tabel"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Laden…</td></tr></tbody>
+    </table></div>
   </div>
 
-  <!-- FORM INCIDENT/AGRESSIE -->
-  <div id="form-AG" class="form-body" style="display:none">
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>Incidentgegevens</div>
-      <div class="frow"><div class="ff"><label>School / vestiging</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Datum</label><input type="date" value="2026-06-05"></div><div class="ff"><label>Tijdstip</label><input type="time" value="15:30"></div></div>
-      <div class="frow"><div class="ff"><label>Type incident</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Verbale agressie</span><span class="chip" onclick="cSel(this)">Fysieke agressie</span><span class="chip" onclick="cSel(this)">Bedreiging</span><span class="chip" onclick="cSel(this)">Vandalisme</span><span class="chip" onclick="cSel(this)">Ongepast gedrag</span></div></div></div>
-      <div class="frow"><div class="ff"><label>Feitelijke omschrijving</label><textarea placeholder="Beschrijf het incident objectief en feitelijk. Vermeld tijdstip, locatie en verloop..."></textarea></div></div>
-      <div class="frow"><div class="ff"><label>Dader — hoedanigheid</label><input type="text" placeholder="bv. ouder van leerling, externe bezoeker..."><div class="fnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Enkel hoedanigheid — naam enkel indien nodig voor PV</div></div><div class="ff"><label>Betrokken medewerker</label><input type="text" placeholder="Naam personeelslid"><div class="fnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Persoonsgegevens — beveiligd</div></div></div>
-      <div class="frow"><div class="ff"><label>Getuigen</label><div id="gag"><div class="grow"><input type="text" placeholder="Naam getuige"><button class="gdel" onclick="this.parentNode.remove()">×</button></div></div><div class="gadd" onclick="addG('gag')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Getuige toevoegen</div></div></div>
-      <div class="frow"><div class="ff"><label>Foto of bewijsstuk</label><div class="upz" onclick="addF('fag','Foto incident.jpg')" style="margin-top:4px"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Foto of bewijsstuk toevoegen</p><small>JPG, PNG, PDF — max 10 MB</small></div><div id="fag"></div></div></div>
-      <div class="frow"><div class="ff"><label>PV bij politie?</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee</span><span class="chip" onclick="cSel(this)">Ja — PV-nummer:</span></div></div></div>
-    </div>
-    <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-or" onclick="doSubmit('AG','i')">Incident melden</button></div>
-  </div>
-
-  <!-- FORM ESCALATIE -->
-  <div id="form-ES" class="form-body" style="display:none">
-    <div class="alert al-r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><strong>Escalatie — directie, preventieadviseur en zorgcoördinator worden onmiddellijk verwittigd via e-mail en SMS bij indiening.</strong></div>
-    <div class="fsec"><div class="fsec-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Urgente melding</div>
-      <div class="frow"><div class="ff"><label>School / vestiging</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Tijdstip (nu)</label><input type="time" id="es-t" value="15:45"></div></div>
-      <div class="frow"><div class="ff"><label>Korte omschrijving van de crisissituatie</label><textarea placeholder="Wat is er aan de hand? Beschrijf in 2-3 zinnen..." style="min-height:72px"></textarea></div></div>
-      <div class="frow"><div class="ff"><label>Betrokken personen</label><input type="text" placeholder="bv. 1 medewerker, ouder van leerling..."></div><div class="ff"><label>Politie al verwittigd?</label><div class="chips"><span class="chip cr" onclick="cSel(this)">Nee — bel nu 101</span><span class="chip" onclick="cSel(this)">Ja</span></div></div></div>
-    </div>
-    <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-r" onclick="doSubmit('ES','r')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Escalatie indienen</button></div>
-  </div>
-
-  <!-- SUCCESS -->
-  <div id="success" style="display:none">
-    <div class="sbox"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><div class="sbox-t">Melding ingediend</div><div class="sbox-s" id="smsg">Verwittigd.</div><div class="rpill v" id="sref">Ref: AO-2026-06</div>
-      <div class="brow" style="justify-content:center;margin-top:20px"><button class="btn btn-p" onclick="resetA()">Nieuwe melding</button><button class="btn" onclick="show('mijn')">Mijn meldingen</button></div>
-    </div>
   </div>
 </div>
-<!-- MIJN MELDINGEN -->
-<div class="screen" id="screen-mijn">
-  <div class="tw"><table><colgroup><col style="width:90px"><col style="width:110px"><col style="width:80px"><col style="width:130px"><col style="width:90px"></colgroup>
-    <tr><th>Ref</th><th>Type</th><th>Pijler</th><th>Datum</th><th>Status</th></tr>
-    <tr><td class="cl" onclick="show('ao-detail')">AO-2026-05</td><td>Arbeidsongeval</td><td><span class="badge b-blue">Veiligheid</span></td><td>30.03.2026</td><td><span class="badge b-amb">In behandeling</span></td></tr>
-    <tr><td class="cl">EH-2026-02</td><td>EHBO</td><td><span class="badge b-blue">Veiligheid</span></td><td>12.02.2026</td><td><span class="badge b-grn">Afgewerkt</span></td></tr>
-    <tr><td class="cl">RI-2026-01</td><td>Risico</td><td><span class="badge b-blue">Veiligheid</span></td><td>05.01.2026</td><td><span class="badge b-grn">Afgewerkt</span></td></tr>
-  </table></div>
 </div>
-
-<!-- VEILIGHEID -->
-<div class="screen" id="screen-veiligheid">
-  <div class="stabs"><div class="stab active" onclick="stab(this)">Alle scholen</div><div class="stab" onclick="stab(this)">CS Lijsterstraat</div><div class="stab" onclick="stab(this)">CS Stationsstraat</div><div class="stab" onclick="stab(this)">Kouterschool</div><div class="stab" onclick="stab(this)">School Ter Elst</div></div>
-  <div class="tw"><table><colgroup><col style="width:90px"><col style="width:140px"><col style="width:100px"><col style="width:120px"><col style="width:90px"></colgroup>
-    <tr><th>Ref</th><th>Personeelslid</th><th>Type</th><th>School</th><th>Status</th></tr>
-    <tr><td class="cl" onclick="show('ao-detail')">AO-2026-05</td><td>Wim Cools</td><td>Arbeidsongeval</td><td>CS Lijsterstraat</td><td><span class="badge b-amb">In behandeling</span></td></tr>
-    <tr><td class="cl">AO-2025-04</td><td>Marijke Van Schichel</td><td>Arbeidsongeval</td><td>CS Lijsterstraat</td><td><span class="badge b-grn">Afgewerkt</span></td></tr>
-    <tr><td class="cl">AO-2025-03</td><td>Laura Boeykens</td><td>Arbeidsongeval</td><td>CS Lijsterstraat</td><td><span class="badge b-grn">Afgewerkt</span></td></tr>
-    <tr><td class="cl">EH-2026-03</td><td>K. Janssen</td><td>EHBO</td><td>Kouterschool</td><td><span class="badge b-grn">Afgewerkt</span></td></tr>
-    <tr><td class="cl">LO-2026-02</td><td>—</td><td>Leerlingongeval</td><td>CS Stationsstraat</td><td><span class="badge b-grn">Afgewerkt</span></td></tr>
-    <tr><td class="cl">RI-2026-04</td><td>—</td><td>Risico (kritiek)</td><td>School Ter Elst</td><td><span class="badge b-red">Openstaand</span></td></tr>
-  </table></div>
-</div>
-
-<!-- AO OVERZICHT -->
-<div class="screen" id="screen-ao">
-  <div class="tw"><table><colgroup><col style="width:90px"><col style="width:150px"><col style="width:110px"><col style="width:120px"><col style="width:90px"></colgroup>
-    <tr><th>Ref</th><th>Personeelslid</th><th>Letsel</th><th>School</th><th>AGODI</th></tr>
-    <tr><td class="cl" onclick="show('ao-detail')">AO-2026-05</td><td>Wim Cools</td><td>Schouder + knie</td><td>CS Lijsterstraat</td><td><span class="badge b-amb">Lopend</span></td></tr>
-    <tr><td class="cl">AO-2025-04</td><td>Marijke Van Schichel</td><td>Rechtervoet</td><td>CS Lijsterstraat</td><td><span class="badge b-grn">Ingediend</span></td></tr>
-    <tr><td class="cl">AO-2025-03</td><td>Laura Boeykens</td><td>Rug</td><td>CS Lijsterstraat</td><td><span class="badge b-grn">Ingediend</span></td></tr>
-    <tr><td class="cl">AO-2025-01</td><td>Rita Rubbrecht</td><td>Linkerpols</td><td>CS Lijsterstraat</td><td><span class="badge b-grn">Ingediend</span></td></tr>
-    <tr><td class="cl">AO-2023-03</td><td>Conny Palstermans</td><td>Rug (val speelplaats)</td><td>CS Lijsterstraat</td><td><span class="badge b-grn">Ingediend</span></td></tr>
-    <tr><td class="cl">AO-2024-08</td><td>M. Declercq</td><td>Knie</td><td>Kouterschool</td><td><span class="badge b-grn">Ingediend</span></td></tr>
-  </table></div>
-</div>
-
-<!-- AO DETAIL -->
-<div class="screen" id="screen-ao-detail">
-  <div class="steps"><div class="step done">✓ Gemeld</div><div class="step cur">In behandeling</div><div class="step">AGODI</div><div class="step">Verzekering</div><div class="step">Afgewerkt</div></div>
-  <div class="dcard">
-    <div class="dc-h"><div><div class="dc-t">AO-2026-05 — Wim Cools</div><div class="dc-m">Arbeidsongeval · CS Lijsterstraat · 30 maart 2026 · 08:15 · Woon-werkverkeer</div></div><span class="badge b-amb">In behandeling</span></div>
-    <div class="dc-grid">
-      <div class="dcf"><label>Aanleiding</label><p>Fietsongeluk woon-werkverkeer</p></div>
-      <div class="dcf"><label>Letsel</label><p>Schouder en rechterknie</p></div>
-      <div class="dcf"><label>Arts geraadpleegd</label><p>Ja — huisarts 30.03.2026</p></div>
-      <div class="dcf"><label>Verwachte afwezigheid</label><p>Lopend — niet bepaald</p></div>
-      <div class="dcf"><label>Getuigen</label><p>1 getuige geregistreerd</p></div>
-      <div class="dcf"><label>Bijlagen</label><p>Medisch attest (PDF) · Foto letsel (JPG)</p></div>
-      <div class="dcf"><label>AGODI-deadline</label><p class="warn">07.04.2026 — deadline verstreken!</p></div>
-      <div class="dcf"><label>Consolidatiedatum</label><p>Nog niet bepaald</p></div>
-    </div>
-    <div class="abar">
-      <button class="btn btn-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>AGODI indienen</button>
-      <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Verzekering</button>
-      <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Werkopdracht</button>
-      <button class="btn" onclick="show('ao')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Terug</button>
-    </div>
-  </div>
-  <div class="fsec"><div class="fsec-t">Opvolgnotitie</div><div class="frow"><div class="ff"><textarea placeholder="Voeg een opvolgnotitie toe..."></textarea></div></div><div class="brow"><button class="btn btn-p btn-sm">Notitie opslaan</button></div></div>
-</div>
-
-<!-- RISICO -->
-<div class="screen" id="screen-risico">
-  <div class="tw"><table><colgroup><col style="width:90px"><col style="width:160px"><col style="width:80px"><col style="width:120px"><col style="width:90px"></colgroup>
-    <tr><th>Ref</th><th>Omschrijving</th><th>Ernst</th><th>School</th><th>Opvolging</th></tr>
-    <tr><td class="cl">RI-2026-04</td><td>Losliggende tegels inkomhal</td><td><span class="badge b-red">Kritiek</span></td><td>School Ter Elst</td><td><span class="badge b-red">Openstaand</span></td></tr>
-    <tr><td class="cl">RI-2026-03</td><td>Gladde vloer keuken</td><td><span class="badge b-amb">Gemiddeld</span></td><td>CS Lijsterstraat</td><td><span class="badge b-amb">Werkopdracht</span></td></tr>
-    <tr><td class="cl">RI-2026-01</td><td>Defecte deurkruk klas 4B</td><td><span class="badge b-muted">Laag</span></td><td>CS Lijsterstraat</td><td><span class="badge b-grn">Opgelost</span></td></tr>
-  </table></div>
-</div>
-
-<!-- WELZIJN -->
-<div class="screen" id="screen-welzijn">
-  <div class="alert al-pk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Vertrouwelijke module — uitsluitend zichtbaar voor directie en aangewezen zorgcoördinator per school. Alle toegangen worden gelogd (GDPR audit trail).</div>
-  <div class="stabs"><div class="stab active w" onclick="stab(this)">Alle scholen</div><div class="stab" onclick="stab(this)">CS Lijsterstraat</div><div class="stab" onclick="stab(this)">CS Stationsstraat</div><div class="stab" onclick="stab(this)">Kouterschool</div><div class="stab" onclick="stab(this)">School Ter Elst</div></div>
-  <div class="tw"><table><colgroup><col style="width:90px"><col style="width:110px"><col style="width:130px"><col style="width:120px"><col style="width:90px"></colgroup>
-    <tr><th>Ref</th><th>Type</th><th>School</th><th>Toegewezen aan</th><th>Status</th></tr>
-    <tr><td class="cl">WE-2026-07</td><td>Psychosociaal</td><td>Kouterschool</td><td>Zorgcoördinator</td><td><span class="badge b-pink">Vertrouwelijk</span></td></tr>
-    <tr><td class="cl">WE-2026-05</td><td>Pestgedrag</td><td>CS Stationsstraat</td><td>Zorgcoördinator</td><td><span class="badge b-amb">In opvolging</span></td></tr>
-    <tr><td class="cl">WE-2026-03</td><td>GOG</td><td>CS Lijsterstraat</td><td>Directie</td><td><span class="badge b-grn">Afgesloten</span></td></tr>
-  </table></div>
-</div>
-
-<!-- PEST / PSYCHO / GOG -->
-<div class="screen" id="screen-pest"><div class="alert al-pk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Vertrouwelijk dossier — toegang gelogd</div><p style="font-size:12px;color:var(--cm);padding:20px;text-align:center">Selecteer een dossier via het welzijnsoverzicht</p></div>
-<div class="screen" id="screen-psycho"><div class="alert al-pk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Strikt vertrouwelijk — enkel directie</div><p style="font-size:12px;color:var(--cm);padding:20px;text-align:center">Selecteer een dossier via het welzijnsoverzicht</p></div>
-<div class="screen" id="screen-gog"><div class="alert al-pk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Vertrouwelijk dossier</div><p style="font-size:12px;color:var(--cm);padding:20px;text-align:center">Selecteer een dossier via het welzijnsoverzicht</p></div>
-
-<!-- INCIDENTEN -->
-<div class="screen" id="screen-incidenten">
-  <div class="stabs"><div class="stab active i" onclick="stab(this)">Alle scholen</div><div class="stab" onclick="stab(this)">CS Lijsterstraat</div><div class="stab" onclick="stab(this)">CS Stationsstraat</div><div class="stab" onclick="stab(this)">Kouterschool</div><div class="stab" onclick="stab(this)">School Ter Elst</div></div>
-  <div class="tw"><table><colgroup><col style="width:90px"><col style="width:150px"><col style="width:90px"><col style="width:120px"><col style="width:90px"></colgroup>
-    <tr><th>Ref</th><th>Omschrijving</th><th>Type</th><th>School</th><th>Status</th></tr>
-    <tr><td class="cl" onclick="show('esc-detail')">ES-2026-02</td><td>Agressief gedrag ouder</td><td><span class="badge b-red">Escalatie</span></td><td>CS Stationsstraat</td><td><span class="badge b-red">Dringend</span></td></tr>
-    <tr><td class="cl">AG-2026-03</td><td>Verbale agressie bezoeker</td><td>Agressie</td><td>Kouterschool</td><td><span class="badge b-amb">In behandeling</span></td></tr>
-    <tr><td class="cl">IN-2026-05</td><td>Ongepast gedrag bezoeker</td><td>Incident</td><td>School Ter Elst</td><td><span class="badge b-grn">Afgewerkt</span></td></tr>
-    <tr><td class="cl">ES-2026-01</td><td>Fysiek incident speelplaats</td><td><span class="badge b-red">Escalatie</span></td><td>CS Lijsterstraat</td><td><span class="badge b-grn">Afgewerkt</span></td></tr>
-  </table></div>
-</div>
-
-<!-- AGRESSIE -->
-<div class="screen" id="screen-agressie">
-  <div class="alert al-r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>2 actieve meldingen vereisen opvolging.</div>
-  <div class="tw"><table><colgroup><col style="width:90px"><col style="width:160px"><col style="width:130px"><col style="width:100px"><col style="width:90px"></colgroup>
-    <tr><th>Ref</th><th>Omschrijving</th><th>School</th><th>Datum</th><th>Status</th></tr>
-    <tr><td class="cl" onclick="show('esc-detail')">ES-2026-02</td><td>Agressief gedrag ouder</td><td>CS Stationsstraat</td><td>14.05.2026</td><td><span class="badge b-red">Dringend</span></td></tr>
-    <tr><td class="cl">AG-2026-03</td><td>Verbale agressie bezoeker</td><td>Kouterschool</td><td>12.04.2026</td><td><span class="badge b-amb">In behandeling</span></td></tr>
-  </table></div>
-</div>
-
-<!-- ESCALATIE DETAIL -->
-<div class="screen" id="screen-esc-detail">
-  <div class="alert al-r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><strong>Escalatie — directie en preventieadviseur zijn automatisch verwittigd via e-mail en SMS.</strong></div>
-  <div class="dcard">
-    <div class="dc-h"><div><div class="dc-t">ES-2026-02 — Agressief gedrag ouder</div><div class="dc-m">CS Stationsstraat · 14 mei 2026 · 15:40 · Inkomhal</div></div><span class="badge b-red">Dringend</span></div>
-    <div class="dc-grid">
-      <div class="dcf"><label>Type</label><p>Verbale + fysieke bedreiging</p></div>
-      <div class="dcf"><label>Betrokken medewerker</label><p>Onthaal — medewerker secretariaat</p></div>
-      <div class="dcf"><label>Getuigen</label><p>2 collega's aanwezig — geregistreerd</p></div>
-      <div class="dcf"><label>Politie (101)</label><p>Nog niet verwittigd</p></div>
-    </div>
-    <div class="abar">
-      <button class="btn btn-r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2.3h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Politie (101)</button>
-      <button class="btn btn-or"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>PV aanmaken</button>
-      <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Notitie</button>
-      <button class="btn" onclick="show('incidenten')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Terug</button>
-    </div>
-  </div>
-</div>
-
-<!-- WERKOPDRACHTEN -->
-<div class="screen" id="screen-werkopdrachten">
-  <div class="kgrid kgrid3">
-    <div class="kpi"><div class="kpi-l">Openstaand</div><div class="kpi-v kv-a">5</div></div>
-    <div class="kpi"><div class="kpi-l">In uitvoering</div><div class="kpi-v kv-b">3</div></div>
-    <div class="kpi"><div class="kpi-l">Afgerond (2026)</div><div class="kpi-v kv-g">14</div></div>
-  </div>
-  <div class="wo"><svg viewBox="0 0 24 24" style="stroke:var(--red)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div class="wo-b"><div class="wo-t">Losliggende tegels inkomhal herstellen</div><div class="wo-s">RI-2026-04 · School Ter Elst · Aangemaakt 02.05.2026 · Ernst: Kritiek</div></div><span class="badge b-red">Openstaand</span></div>
-  <div class="wo"><svg viewBox="0 0 24 24" style="stroke:var(--amb)"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg><div class="wo-b"><div class="wo-t">Gladde vloer keuken verhelpen (anti-slip)</div><div class="wo-s">RI-2026-03 · CS Lijsterstraat · Aangemaakt 10.04.2026</div></div><span class="badge b-amb">Openstaand</span></div>
-  <div class="wo"><svg viewBox="0 0 24 24" style="stroke:var(--blue)"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><div class="wo-b"><div class="wo-t">Herstelling leuning trap B-gebouw</div><div class="wo-s">RI-2026-02 · CS Stationsstraat · In uitvoering</div></div><span class="badge b-blue">In uitvoering</span></div>
-  <div class="wo"><svg viewBox="0 0 24 24" style="stroke:var(--grn)"><polyline points="20 6 9 17 4 12"/></svg><div class="wo-b"><div class="wo-t">Defecte deurkruk klas 4B vervangen</div><div class="wo-s">RI-2026-01 · CS Lijsterstraat · Afgerond 20.01.2026</div></div><span class="badge b-grn">Afgerond</span></div>
-</div>
-
-<!-- RAPPORTERING -->
-<div class="screen" id="screen-rapportering">
-  <div class="kgrid">
-    <div class="kpi"><div class="kpi-l">Veiligheid LON</div><div class="kpi-v kv-b">24</div></div>
-    <div class="kpi"><div class="kpi-l">Welzijn LON</div><div class="kpi-v kv-pk">14</div></div>
-    <div class="kpi"><div class="kpi-l">Incidenten LON</div><div class="kpi-v kv-a">20</div></div>
-    <div class="kpi"><div class="kpi-l">Totaal 2026</div><div class="kpi-v kv-g">58</div></div>
-  </div>
-  <div class="bar-lbl">Meldingen per school — 2026</div>
-  <div class="brow2"><span class="blbl">CS Lijsterstraat</span><div class="btrack"><div class="bfill" style="width:62%;background:var(--blue)"></div></div><span class="bval" style="color:var(--blue)">18</span></div>
-  <div class="brow2"><span class="blbl">CS Stationsstraat</span><div class="btrack"><div class="bfill" style="width:48%;background:var(--blue)"></div></div><span class="bval" style="color:var(--blue)">14</span></div>
-  <div class="brow2"><span class="blbl">Kouterschool</span><div class="btrack"><div class="bfill" style="width:55%;background:var(--grn)"></div></div><span class="bval" style="color:var(--grn)">16</span></div>
-  <div class="brow2" style="margin-bottom:18px"><span class="blbl">School Ter Elst</span><div class="btrack"><div class="bfill" style="width:34%;background:var(--amb)"></div></div><span class="bval" style="color:var(--amb)">10</span></div>
-  <div class="bar-lbl">Per meldingstype — LON 2026</div>
-  <div class="brow2"><span class="blbl">Arbeidsongevallen</span><div class="btrack"><div class="bfill" style="width:38%;background:var(--blue)"></div></div><span class="bval" style="color:var(--blue)">9</span></div>
-  <div class="brow2"><span class="blbl">EHBO / Leerlingen</span><div class="btrack"><div class="bfill" style="width:38%;background:var(--blue)"></div></div><span class="bval" style="color:var(--blue)">9</span></div>
-  <div class="brow2"><span class="blbl">Risico-meldingen</span><div class="btrack"><div class="bfill" style="width:25%;background:var(--blue)"></div></div><span class="bval" style="color:var(--blue)">6</span></div>
-  <div class="brow2"><span class="blbl">Pestgedrag</span><div class="btrack"><div class="bfill" style="width:21%;background:var(--pink)"></div></div><span class="bval" style="color:var(--pink)">5</span></div>
-  <div class="brow2"><span class="blbl">Psychosociaal / GOG</span><div class="btrack"><div class="bfill" style="width:38%;background:var(--pink)"></div></div><span class="bval" style="color:var(--pink)">9</span></div>
-  <div class="brow2"><span class="blbl">Agressie / incidenten</span><div class="btrack"><div class="bfill" style="width:42%;background:var(--ora)"></div></div><span class="bval" style="color:var(--ora)">10</span></div>
-  <div class="brow2" style="margin-bottom:18px"><span class="blbl">Escalaties</span><div class="btrack"><div class="bfill" style="width:21%;background:var(--red)"></div></div><span class="bval" style="color:var(--red)">5</span></div>
-  <div class="brow" style="justify-content:flex-start">
-    <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export Excel — LON</button>
-    <button class="btn btn-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>AGODI-jaarrapport genereren</button>
-  </div>
-</div>
-<!-- GDPR -->
-<div class="screen" id="screen-gdpr">
-  <div class="alert al-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span><strong>LON Meldpunt — GDPR/AVG-beleid</strong> · Alle persoonsgegevens worden verwerkt conform AVG (EU 2016/679) en de Belgische privacywetgeving (Wet 30 juli 2018).</span></div>
-  <div class="gp">
-    <div class="gi"><div class="gi-ic" style="background:var(--blue-bg)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="gi-b"><div class="gi-t">Verwerkingsverantwoordelijke</div><div class="gi-d">LON is de verwerkingsverantwoordelijke. Per school draagt de schooldirectie de operationele verantwoordelijkheid. <strong>DPO: privacy@lon.be</strong></div></div><span class="badge b-grn">Ingesteld</span></div>
-    <div class="gi"><div class="gi-ic" style="background:var(--pink-bg)"><svg viewBox="0 0 24 24" stroke="var(--pink)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="gi-b"><div class="gi-t">Rolgebaseerde toegang (RBAC)</div><div class="gi-d">Welzijnsdossiers zijn uitsluitend zichtbaar voor directie en aangewezen zorgcoördinator per school. Personeelsleden zien enkel eigen meldingen. Alle toegangen tot vertrouwelijke dossiers worden gelogd in een audit trail.</div></div><span class="badge b-grn">Actief</span></div>
-    <div class="gi"><div class="gi-ic" style="background:var(--blue-bg)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div><div class="gi-b"><div class="gi-t">Bewaartermijnen</div><div class="gi-d"><strong>Arbeidsongevallen:</strong> 10 jaar · <strong>Welzijnsdossiers:</strong> 5 jaar na afsluiting · <strong>Medische bijlagen:</strong> consolidatie + 1 jaar · <strong>EHBO:</strong> 3 jaar · <strong>Escalaties:</strong> 5 jaar · <strong>Risico-meldingen:</strong> 7 jaar</div></div><span class="badge b-grn">Geconfigureerd</span></div>
-    <div class="gi"><div class="gi-ic" style="background:var(--amb-bg)"><svg viewBox="0 0 24 24" stroke="var(--amb)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div><div class="gi-b"><div class="gi-t">Recht op inzage, correctie &amp; verwijdering</div><div class="gi-d">Betrokkenen kunnen inzage vragen via de schooldirectie. Verzoeken worden behandeld binnen 30 dagen. Wettelijke bewaartermijnen kunnen verwijdering beperken. Klachten: <strong>www.gegevensbeschermingsautoriteit.be</strong></div></div><span class="badge b-amb">Procedure actief</span></div>
-    <div class="gi"><div class="gi-ic" style="background:var(--grn-bg)"><svg viewBox="0 0 24 24" stroke="var(--grn)"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div><div class="gi-b"><div class="gi-t">Anonimisering in rapportering</div><div class="gi-d">Statistieken en exports bevatten geen persoonsgegevens. Namen zijn enkel zichtbaar in individuele dossiers voor bevoegden. AGODI-exports worden geanonimiseerd tenzij wettelijk anders vereist.</div></div><span class="badge b-grn">Actief</span></div>
-    <div class="gi"><div class="gi-ic" style="background:var(--pink-bg)"><svg viewBox="0 0 24 24" stroke="var(--pink)"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="gi-b"><div class="gi-t">Minderjarigen — extra bescherming (art. 8 AVG)</div><div class="gi-d">Leerlinggegevens vallen onder extra bescherming. Leerlingenidentificatie is beperkt tot directie en zorgcoördinator. Leerlingenongevallen worden in rapporten geanonimiseerd. Ouderlijk toestemmingsvereiste geldt buiten wettelijke grondslag.</div></div><span class="badge b-grn">Actief</span></div>
-    <div class="gi"><div class="gi-ic" style="background:var(--blue-bg)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="gi-b"><div class="gi-t">Technische beveiliging</div><div class="gi-d"><strong>Opslag:</strong> SharePoint Online (EU-datacenters, ISO 27001) · <strong>Auth:</strong> MSAL / Microsoft 365 SSO · <strong>Bijlagen:</strong> AES-256 versleuteling · <strong>Verbinding:</strong> HTTPS/TLS 1.3 · <strong>Audit trail:</strong> alle toegangen gelogd</div></div><span class="badge b-grn">Actief</span></div>
-  </div>
-</div>
-
-<!-- TECHNISCH -->
-<div class="screen" id="screen-technisch">
-  <div class="alert al-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Technische architectuur — implementatiegids voor IT-beheerder LON</div>
-  <div class="si"><div class="si-h"><div class="si-ic" style="background:var(--grn-bg)"><svg viewBox="0 0 24 24" stroke="var(--grn)"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><div class="si-t">Frontend — dit HTML-bestand</div><span class="badge b-grn">Klaar</span></div><div class="si-d">Volledig zelfstandig HTML-bestand. Geen buildstap vereist. Hosten als statische pagina in SharePoint Site Assets of Azure Static Web Apps.</div><div class="si-code">Hosting opties:
-1. SharePoint: Site Assets → Meldpunt/index.html
-   URL: https://&lt;tenant&gt;.sharepoint.com/sites/LON/SiteAssets/Meldpunt/index.html
-
-2. Azure Static Web Apps (aanbevolen — custom domein mogelijk):
-   meldpunt.lon.be</div></div>
-
-  <div class="si"><div class="si-h"><div class="si-ic" style="background:var(--blue-bg)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="si-t">Authenticatie — MSAL.js + Microsoft 365</div><span class="badge b-amb">Configureren</span></div><div class="si-d">Microsoft Authentication Library voor Single Sign-On via Microsoft 365 schoolaccounts. Rollen via Azure AD-groepen per school en functie.</div><div class="si-code">// MSAL configuratie (invullen na Azure AD app-registratie):
-const msalConfig = {
-  auth: {
-    clientId: "&lt;APP_CLIENT_ID&gt;",
-    authority: "https://login.microsoftonline.com/&lt;TENANT_ID&gt;",
-    redirectUri: "&lt;HOSTING_URL&gt;"
-  }
+<script>
+const CFG = {
+  clientId: '08dcc1b5-6041-4e67-ba6f-14650d4e6e62',
+  tenantId: '655d15e1-e5fc-4868-8462-8463dc0ff014',
+  redirectUri: 'https://lon-ka.github.io/LON-Meldpunt-2026/',
+  siteId: 'londerwijs.sharepoint.com,2463b644-ba24-4563-a37f-a67f26941a09,4d5ecb10-38f0-422f-b892-af256a5da6fc',
+  lists: {
+    veiligheid_csl: 'PLACEHOLDER', veiligheid_css: 'PLACEHOLDER', veiligheid_ko: 'PLACEHOLDER', veiligheid_te: 'PLACEHOLDER',
+    welzijn_csl: 'PLACEHOLDER', welzijn_css: 'PLACEHOLDER', welzijn_ko: 'PLACEHOLDER', welzijn_te: 'PLACEHOLDER',
+    incidenten_csl: 'PLACEHOLDER', incidenten_css: 'PLACEHOLDER', incidenten_ko: 'PLACEHOLDER', incidenten_te: 'PLACEHOLDER',
+    beheerders: 'PLACEHOLDER',
+  },
+  scholen: [
+    { sleutel:'csl', naam:'CS Lijsterstraat' },
+    { sleutel:'css', naam:'CS Stationsstraat' },
+    { sleutel:'ko',  naam:'Kouterschool' },
+    { sleutel:'te',  naam:'School Ter Elst' },
+  ],
+  directieEmails: {
+    csl: 'directie@centrumschool.londerzeel.be',
+    css: 'directie@centrumschool.londerzeel.be',
+    ko:  'directie@kouterschool.londerzeel.be',
+    te:  'directie@terelst.londerzeel.be',
+  },
 };
 
-// Azure AD groepen voor rolbeheer:
-LON-Meldpunt-Admin            → LON-brede directie
-LON-Meldpunt-Directie-CSL     → Directie CS Lijsterstraat
-LON-Meldpunt-Directie-CSS     → Directie CS Stationsstraat
-LON-Meldpunt-Directie-KO      → Directie Kouterschool
-LON-Meldpunt-Directie-TE      → Directie School Ter Elst
-LON-Meldpunt-Zorg-[school]    → Zorgcoördinatoren per school
-LON-Meldpunt-Personeel-[school] → Personeelsleden per school</div></div>
+const msalCfg = { auth:{ clientId:CFG.clientId, authority:`https://login.microsoftonline.com/${CFG.tenantId}`, redirectUri:CFG.redirectUri }, cache:{ cacheLocation:'sessionStorage' } };
+const msalClient = new msal.PublicClientApplication(msalCfg);
+let token = null, huidigUser = null, huidigSchool = 'csl', huidigPijler = null;
+let gCounts={}, fCounts={};
+const FN={'fao':['Medisch attest.pdf','Foto letsel.jpg','Getuigenverklaring.pdf'],'flo':['Foto letsel.jpg','Medisch verslag.pdf'],'fri':['Foto risico.jpg'],'fag':['Foto incident.jpg','PV politie.pdf']};
 
-  <div class="si"><div class="si-h"><div class="si-ic" style="background:var(--grn-bg)"><svg viewBox="0 0 24 24" stroke="var(--grn)"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg></div><div class="si-t">Backend — SharePoint REST API</div><span class="badge b-amb">Configureren</span></div><div class="si-d">Meldingen opgeslagen als items in SharePoint-lijsten. Bijlagen in Document Libraries met IRM-versleuteling.</div><div class="si-code">SharePoint site: https://&lt;tenant&gt;.sharepoint.com/sites/LON-Meldpunt
+async function login() {
+  await msalClient.initialize();
+  const resp = await msalClient.handleRedirectPromise();
+  if (resp) { token = resp.accessToken; initApp(resp.account); return; }
+  const accs = msalClient.getAllAccounts();
+  if (accs.length) {
+    try {
+      const t = await msalClient.acquireTokenSilent({ scopes:['Sites.ReadWrite.All','Mail.Send'], account:accs[0] });
+      token = t.accessToken; initApp(accs[0]); return;
+    } catch(e) {}
+  }
+  await msalClient.loginRedirect({ scopes:['Sites.ReadWrite.All','Mail.Send'] });
+}
 
-Lijsten:
-├── Meldingen              (centrale index)
-├── Arbeidsongevallen      (+ Getuigen sublijst)
-├── EHBO_Registraties
-├── Leerlingenongevallen
-├── RisicoMeldingen
-├── WelzijnDossiers        (extra beveiliging: alleen directie/zorg)
-├── Incidenten
-├── Werkopdrachten
-└── Notificatie_Log
+function initApp(acc) {
+  huidigUser = acc;
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  const avTxt = (acc.name||acc.username||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('i-av').textContent = avTxt;
+  document.getElementById('i-naam').textContent = acc.name || acc.username;
+  document.getElementById('i-school').textContent = schoolNaam(huidigSchool);
+  // Stel datum in voor escalatietijdstip
+  const et = document.getElementById('es-t');
+  if (et) et.value = new Date().toTimeString().slice(0,5);
+  // Stel datum in voor AO
+  const ad = document.getElementById('ao-datum');
+  if (ad) ad.value = new Date().toISOString().slice(0,10);
+}
 
-Document Libraries:
-├── Bijlagen_Veiligheid    (IRM + AES-256)
-├── Bijlagen_Medisch       (IRM + beperkte toegang)
-└── Bijlagen_Incidenten
+function logout() { msalClient.logout(); }
+function schoolNaam(s) { const x=CFG.scholen.find(c=>c.sleutel===s); return x?x.naam:s; }
+function changeSchool(s) { huidigSchool=s; document.getElementById('i-school').textContent=schoolNaam(s); }
 
-// API call — melding opslaan:
-const res = await fetch(
-  `${siteUrl}/_api/web/lists/getbytitle('Arbeidsongevallen')/items`,
-  { method:'POST', headers:{ 'Authorization':`Bearer ${token}`,
-    'Content-Type':'application/json;odata=verbose',
-    'X-RequestDigest':digest },
-    body: JSON.stringify({ '__metadata':{'type':'SP.Data.ArbeidsongevallenListItem'},
-      Title:ref, School:school, Datum:datum, Personeelslid:naam,
-      Letsel:letsel, Status:'In behandeling' }) });</div></div>
-
-  <div class="si"><div class="si-h"><div class="si-ic" style="background:var(--amb-bg)"><svg viewBox="0 0 24 24" stroke="var(--amb)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="si-t">Power Automate — notificaties &amp; flows</div><span class="badge b-amb">Bouwen</span></div>
-    <div class="fdiag"><div class="fn fnb">Nieuwe melding</div><div class="fa">→</div><div class="fn">Flow triggert</div><div class="fa">→</div><div class="fn fna">E-mail + Teams</div><div class="fa">→</div><div class="fn fng">Status bijgewerkt</div></div>
-    <div class="si-code">Te bouwen flows in Power Automate:
-
-1. Nieuwe melding → notificatie directie
-   Trigger: SharePoint item aangemaakt in 'Meldingen'
-   Actie: E-mail + Teams bericht naar directie van de betreffende school
-
-2. Arbeidsongeval → AGODI-deadline bewaken
-   Trigger: Nieuw AO-item (arts=Ja)
-   Actie: Taak aanmaken deadline D+8 + herinnering D+6
-
-3. Escalatie → SMS + onmiddellijke notificatie
-   Trigger: Item type='Escalatie'
-   Actie: SMS via Azure Communication Services
-           + urgent Teams bericht directie + preventieadviseur
-
-4. Risico → werkopdracht automatisch aanmaken
-   Trigger: Nieuw item in 'RisicoMeldingen'
-   Actie: Item aanmaken in 'Werkopdrachten' + toewijzen
-
-5. Welzijn → beperkte vertrouwelijke notificatie
-   Trigger: Item in 'WelzijnDossiers'
-   Actie: Enkel naar directie + aangewezen zorgcoördinator
-
-6. GDPR-bewaartermijnen → automatisch archiveren
-   Trigger: Wekelijkse scheduler
-   Actie: Verlopen termijnen detecteren → archiveren / verwijderen</div></div>
-
-  <div class="si"><div class="si-h"><div class="si-ic" style="background:var(--grn-bg)"><svg viewBox="0 0 24 24" stroke="var(--grn)"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="si-t">Implementatieplan — 5 fases</div></div>
-    <div class="si-code">Fase 1 — Infrastructuur (week 1-2):
-  □ Azure AD app-registratie aanmaken
-  □ SharePoint site 'LON-Meldpunt' aanmaken
-  □ Alle lijsten aanmaken met juiste kolommen
-  □ Document Libraries + IRM inschakelen
-  □ Azure AD groepen aanmaken per school + rol
-  □ Gebruikers toewijzen aan groepen
-
-Fase 2 — HTML koppelen aan SharePoint (week 3):
-  □ MSAL client ID invullen in dit bestand
-  □ SharePoint site URL invullen in API-calls
-  □ Formulierdata koppelen aan SharePoint REST API
-  □ Bijlagen koppelen aan Document Library
-  □ Rolcheck implementeren (welzijn = beperkt)
-
-Fase 3 — Power Automate flows (week 4):
-  □ Flows 1 t.e.m. 6 bouwen + testen
-  □ E-mailadressen per school configureren
-  □ SMS-configuratie escalaties (Azure Communication Services)
-  □ AGODI-deadline flow testen
-
-Fase 4 — Test &amp; validatie (week 5):
-  □ Acceptatietest per school (1 gebruiker per rol)
-  □ GDPR-review door DPO
-  □ Penetratietest op toegangsbeveiliging
-  □ Handleiding schrijven (NL)
-
-Fase 5 — Uitrol LON (week 6):
-  □ Uitrol alle 4 scholen tegelijk
-  □ Korte opleiding per school (30 min)
-  □ Hotline eerste 2 weken na lancering</div></div>
-</div>
-
-<!-- NOTIFICATIES -->
-<div class="screen" id="screen-notificaties">
-  <div class="nitem"><div class="ndotc nd-r"></div><div class="nt"><strong>Escalatie ES-2026-02</strong> — CS Stationsstraat. Agressief gedrag ouder in inkomhal. Onmiddellijke actie vereist.</div><span class="nm">14.05&nbsp;15:40</span></div>
-  <div class="nitem"><div class="ndotc nd-a"></div><div class="nt">AO-2026-05 (Wim Cools, CS Lijsterstraat) — <strong>AGODI-deadline 07.04 verstreken.</strong> Aangifte dringend vereist.</div><span class="nm">07.04</span></div>
-  <div class="nitem"><div class="ndotc nd-a"></div><div class="nt">Risico RI-2026-04 (losliggende tegels Ter Elst) — ernst KRITIEK — <strong>geen werkopdracht</strong> aangemaakt.</div><span class="nm">03.05</span></div>
-  <div class="nitem"><div class="ndotc nd-p"></div><div class="nt">Nieuw welzijns-dossier WE-2026-07 aangemaakt — Kouterschool. Toegewezen aan zorgcoördinator.</div><span class="nm">02.05</span></div>
-  <div class="nitem"><div class="ndotc nd-a"></div><div class="nt">Werkopdracht WO-2026-02 (gladde vloer keuken, CS Lijsterstraat) — 26 dagen openstaand. Herinnering.</div><span class="nm">01.05</span></div>
-  <div class="nitem"><div class="ndotc nd-g"></div><div class="nt">RI-2026-01 afgewerkt — defecte deurkruk klas 4B (CS Lijsterstraat) hersteld door technische dienst.</div><span class="nm">20.01</span></div>
-</div>
-
-  </div><!-- /content -->
-</div><!-- /main -->
-</div><!-- /shell -->
-<script>
-const SCREENS={aangifte:'Snelle aangifte',mijn:'Mijn meldingen',veiligheid:'Pijler veiligheid',ao:'Arbeidsongevallen',risico:'Risico-meldingen','ao-detail':'Dossier AO-2026-05',welzijn:'Pijler welzijn',pest:'Pestgedrag',psycho:'Psychosociaal',gog:'Grensoverschrijdend',incidenten:'Pijler incidenten',agressie:'Agressie','esc-detail':'Escalatie — dringend',dashboard:'Dashboard LON',werkopdrachten:'Werkopdrachten',rapportering:'Rapportering',gdpr:'GDPR & Privacy',technisch:'Technische setup',notificaties:'Notificaties'};
-const BADGES={aangifte:'melding',mijn:'mijn dossiers',veiligheid:'veiligheid',ao:'historiek',risico:"risico's",'ao-detail':'detail',welzijn:'vertrouwelijk',pest:'vertrouwelijk',psycho:'vertrouwelijk',gog:'vertrouwelijk',incidenten:'incidenten',agressie:'agressie','esc-detail':'DRINGEND',dashboard:'LON',werkopdrachten:'opvolging',rapportering:'statistieken',gdpr:'privacy',technisch:'dev',notificaties:'3 nieuw'};
-const BCLS={welzijn:'b-pink',pest:'b-pink',psycho:'b-pink',gog:'b-pink','esc-detail':'b-red',agressie:'b-ora',incidenten:'b-ora',veiligheid:'b-blue',ao:'b-blue',risico:'b-blue','ao-detail':'b-amb',aangifte:'b-blue',gdpr:'b-blue',technisch:'b-blue',rapportering:'b-grn'};
-
-function show(s){
+function show(s) {
   document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
-  const sc=document.getElementById('screen-'+s);
-  if(sc)sc.classList.add('active');
+  document.getElementById(`screen-${s}`).classList.add('active');
   document.querySelectorAll('.ni').forEach(el=>el.classList.remove('active'));
-  const nav=document.getElementById('nav-'+s);
-  if(nav)nav.classList.add('active');
-  document.getElementById('tb-t').textContent=SCREENS[s]||s;
+  const nav=document.getElementById(`nav-${s}`);
+  if (nav) {
+    nav.classList.add('active');
+    if (nav.classList.contains('nv')) nav.classList.add('nv');
+    if (nav.classList.contains('nw')) nav.classList.add('nw');
+    if (nav.classList.contains('ni2')) nav.classList.add('ni2');
+  }
+  const titels={aangifte:'Snelle aangifte',mijn:'Mijn meldingen',veiligheid:'Pijler veiligheid',welzijn:'Pijler welzijn',incidenten:'Pijler incidenten'};
+  const badges={aangifte:'melding',mijn:'mijn dossiers',veiligheid:'veiligheid',welzijn:'vertrouwelijk',incidenten:'incidenten'};
+  const bcls={welzijn:'b-pink',incidenten:'b-amb'};
+  document.getElementById('tb-t').textContent=titels[s]||s;
   const tb=document.getElementById('tb-b');
-  tb.textContent=BADGES[s]||'';
-  tb.className='badge '+(BCLS[s]||'b-grn');
+  tb.textContent=badges[s]||'';
+  tb.className='badge '+(bcls[s]||'b-blue');
+  if (s==='mijn') laadMijn();
+  if (s==='veiligheid') laadVeiligheid();
+  if (s==='welzijn') laadWelzijn();
+  if (s==='incidenten') laadIncidenten();
 }
 
-let gCounts={};
-function addG(id){
-  gCounts[id]=(gCounts[id]||1)+1;
-  const d=document.getElementById(id);
-  const r=document.createElement('div');r.className='grow';
-  r.innerHTML=`<input type="text" placeholder="Naam getuige ${gCounts[id]}"><button class="gdel" onclick="this.parentNode.remove()">×</button>`;
-  d.appendChild(r);
-}
-
-const FN={'fao':['Medisch attest.pdf','Foto letsel.jpg','Getuigenverklaring.pdf'],'flo':['Foto letsel.jpg','Medisch verslag.pdf'],'fri':['Foto risico.jpg','Technisch rapport.pdf'],'fag':['Foto incident.jpg','PV politie.pdf','Getuigenverklaring.pdf']};
-let fCounts={};
-function addF(id,def){
-  fCounts[id]=(fCounts[id]||0)+1;
-  const names=FN[id]||[def];
-  const name=names[(fCounts[id]-1)%names.length];
-  const d=document.getElementById(id);
-  const item=document.createElement('div');item.className='fitem';
-  item.innerHTML=`<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>${name}</span><span class="fenc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Versleuteld</span><button class="fdel" onclick="this.parentNode.remove()">×</button>`;
-  d.appendChild(item);
-}
-
-function cSel(el){
-  el.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('cs','cw','cr'));
-  el.classList.add('cs');
-}
-
-function selType(prefix,cls,card){
+function selType(prefix, cls, card) {
   document.querySelectorAll('.tc').forEach(c=>c.classList.remove('sel','sv','sw','si','sr'));
   card.classList.add('sel',cls);
   document.querySelectorAll('.form-body').forEach(f=>f.style.display='none');
   document.getElementById('keuze').style.display='none';
   document.getElementById('success').style.display='none';
   const map={AO:'form-AO',EH:'form-EH',LO:'form-LO',RI:'form-RI',PE:'form-welzijn',PS:'form-welzijn',GO:'form-welzijn',AG:'form-AG',OB:'form-AG',ES:'form-ES'};
+  huidigPijler=(['PE','PS','GO'].includes(prefix)?'w':['AG','OB','ES'].includes(prefix)?'i':'v');
   const f=document.getElementById(map[prefix]);
-  if(f)f.style.display='block';
+  if(f) f.style.display='block';
 }
 
-function resetA(){
+function resetA() {
   document.querySelectorAll('.form-body').forEach(f=>f.style.display='none');
   document.getElementById('success').style.display='none';
   document.getElementById('keuze').style.display='block';
   document.querySelectorAll('.tc').forEach(c=>c.classList.remove('sel','sv','sw','si','sr'));
-  show('aangifte');
+  huidigPijler=null; show('aangifte');
+}
+
+function cSel(el) {
+  el.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('cs','cw','cr'));
+  el.classList.add('cs');
+}
+
+function addG(id) {
+  gCounts[id]=(gCounts[id]||1)+1;
+  const d=document.getElementById(id);
+  const r=document.createElement('div'); r.className='grow';
+  r.innerHTML=`<input type="text" placeholder="Naam getuige ${gCounts[id]}"><button class="gdel" onclick="this.parentNode.remove()">×</button>`;
+  d.appendChild(r);
+}
+
+function addF(id, def) {
+  fCounts[id]=(fCounts[id]||0)+1;
+  const names=FN[id]||[def];
+  const name=names[(fCounts[id]-1)%names.length];
+  const d=document.getElementById(id);
+  const item=document.createElement('div'); item.className='fitem';
+  item.innerHTML=`<span>📎 ${name}</span><span class="fenc">🔒 Versleuteld</span><button class="fdel" onclick="this.parentNode.remove()">×</button>`;
+  d.appendChild(item);
+}
+
+async function graphPost(url, body) {
+  const r=await fetch(`https://graph.microsoft.com/v1.0${url}`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.status);}
+  return r.json();
+}
+
+async function graphGet(url) {
+  const r=await fetch(`https://graph.microsoft.com/v1.0${url}`,{headers:{'Authorization':`Bearer ${token}`}});
+  if(!r.ok) throw new Error(r.status);
+  return r.json();
 }
 
 const MSGS={
-  AO:'Directie en preventieadviseur zijn verwittigd. AGODI-aangifte vereist binnen 8 kalenderdagen indien arts geraadpleegd. Je ontvangt een bevestigingsmail.',
-  EH:'EHBO-registratie bewaard. Geen verdere actie vereist tenzij arts wordt geraadpleegd. Je ontvangt een bevestigingsmail.',
-  LO:'Ouders worden verwittigd. Dossier is aangemaakt. Bij medische tussenkomst volgt verzekeringsmelding. Je ontvangt een bevestigingsmail.',
-  RI:'Werkopdracht automatisch aangemaakt. Preventieadviseur is verwittigd. Je ontvangt een bevestigingsmail.',
-  WE:'Vertrouwelijk dossier aangemaakt. Uitsluitend de aangewezen bevoegden hebben toegang. Je ontvangt een bevestigingsmail.',
-  AG:'Incident geregistreerd. Directie is verwittigd. Overweeg PV bij politie indien nodig. Je ontvangt een bevestigingsmail.',
-  ES:'Directie, preventieadviseur en zorgcoördinator zijn onmiddellijk verwittigd via e-mail en SMS. Bel 101 indien nog niet gedaan.'
+  AO:'Directie en preventieadviseur zijn verwittigd. AGODI-aangifte vereist binnen 8 dagen indien arts geraadpleegd.',
+  EH:'EHBO-registratie bewaard.',
+  LO:'Ouders worden verwittigd. Dossier aangemaakt voor opvolging.',
+  RI:'Werkopdracht automatisch aangemaakt. Preventieadviseur verwittigd.',
+  WE:'Vertrouwelijk dossier aangemaakt. Enkel bevoegden hebben toegang.',
+  AG:'Incident geregistreerd. Directie verwittigd.',
+  ES:'Directie, preventieadviseur en zorgcoördinator zijn onmiddellijk verwittigd via e-mail.',
 };
-const RCLS={v:'v',w:'w',i:'i',r:'r'};
+const PREFIXES={AO:'AO',EH:'EH',LO:'LO',RI:'RI',WE:'WE',AG:'AG',ES:'ES'};
 
-function doSubmit(prefix,pijler){
+async function doSubmit(prefix, pijler) {
+  // Sla op in SharePoint
+  const school = document.getElementById('school-form')?.value || huidigSchool;
+  const listKey = `${pijler==='w'?'welzijn':pijler==='i'?'incidenten':'veiligheid'}_${school}`;
+  const listId = CFG.lists[listKey];
+  const now = new Date();
+  const ref = `${PREFIXES[prefix]||'ME'}-${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(Math.floor(Math.random()*90)+10)}`;
+
+  if (listId && listId !== 'PLACEHOLDER') {
+    try {
+      const naam = document.getElementById('ao-naam')?.value || huidigUser?.name || '—';
+      const omschr = document.getElementById('ao-omschr')?.value || '—';
+      await graphPost(`/sites/${CFG.siteId}/lists/${listId}/items`, {
+        fields: { Title:ref, TypeMelding:prefix, School:school, Naam:naam, Omschrijving:omschr, Status:'In behandeling', Ingediend:now.toISOString(), IngediendDoor:huidigUser?.username||'—' }
+      });
+      // Stuur e-mail notificatie
+      const directieEmail = CFG.directieEmails[school];
+      if (directieEmail && prefix!=='RI') {
+        try {
+          await graphPost(`/me/sendMail`, {
+            message:{ subject:`[LON-Meldpunt] Nieuwe melding: ${prefix} — ${schoolNaam(school)}`,
+              body:{contentType:'Text',content:`Nieuwe melding ingediend:\n\nReferentie: ${ref}\nType: ${prefix}\nSchool: ${schoolNaam(school)}\nDatum: ${now.toLocaleDateString('nl-BE')}\nIngediend door: ${huidigUser?.name||'—'}\n\nBeheerspaneel: https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html`},
+              toRecipients:[{emailAddress:{address:directieEmail}}]
+            }, saveToSentItems:false
+          });
+        } catch(e) {} // e-mail fout is niet kritiek
+      }
+    } catch(e) { console.error('SharePoint fout:', e.message); }
+  }
+
+  // Toon success
   document.querySelectorAll('.form-body').forEach(f=>f.style.display='none');
-  const now=new Date();
-  const ref=prefix+'-'+now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(Math.floor(Math.random()*90)+10);
-  document.getElementById('smsg').textContent=MSGS[prefix]||'Melding ontvangen.';
-  const rp=document.getElementById('sref');
-  rp.textContent='Ref: '+ref;
-  rp.className='rpill '+(RCLS[pijler]||'v');
-  document.querySelector('.sbox svg').style.stroke=({v:'var(--grn)',w:'var(--pink)',i:'var(--ora)',r:'var(--red)'}[pijler]||'var(--grn)');
-  document.getElementById('success').style.display='block';
+  document.getElementById('s-msg').textContent = (MSGS[prefix]||'Melding ontvangen.') + ' Je ontvangt een bevestigingsmail.';
+  document.getElementById('s-ref').textContent = 'Ref: ' + ref;
+  document.getElementById('s-ref').className = 'rpill ' + (pijler||'v');
+  document.getElementById('s-ic').textContent = prefix==='ES'?'🆘':pijler==='w'?'🔒':'✅';
+  document.getElementById('success').style.display = 'block';
 }
 
-function stab(el){
-  el.parentNode.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
+async function laadMijn() {
+  const email = huidigUser?.username?.toLowerCase()||'';
+  const school = huidigSchool;
+  const tbody = document.getElementById('mijn-tabel');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Laden…</td></tr>';
+  const items = [];
+  for (const type of ['veiligheid','welzijn','incidenten']) {
+    const key = `${type}_${school}`;
+    if (!CFG.lists[key]||CFG.lists[key]==='PLACEHOLDER') continue;
+    try {
+      const r = await graphGet(`/sites/${CFG.siteId}/lists/${CFG.lists[key]}/items?$expand=fields&$top=100`);
+      r.value.filter(i=>i.fields.IngediendDoor?.toLowerCase()===email).forEach(i=>items.push({...i.fields,_type:type}));
+    } catch(e) {}
+  }
+  items.sort((a,b)=>new Date(b.Ingediend||0)-new Date(a.Ingediend||0));
+  tbody.innerHTML = items.length ? items.map(i=>`<tr>
+    <td class="cl">${i.Title||'—'}</td>
+    <td>${i.TypeMelding||'—'}</td>
+    <td><span class="badge ${i._type==='welzijn'?'b-pink':i._type==='incidenten'?'b-amb':'b-blue'}">${i._type==='welzijn'?'Welzijn':i._type==='incidenten'?'Incidenten':'Veiligheid'}</span></td>
+    <td>${i.Ingediend?new Date(i.Ingediend).toLocaleDateString('nl-BE'):'—'}</td>
+    <td><span class="badge ${i.Status==='Afgewerkt'?'b-grn':i.Status==='In behandeling'?'b-amb':'b-muted'}">${i.Status||'—'}</span></td></tr>`).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nog geen meldingen ingediend</td></tr>';
 }
 
-function changeRole(r){
-  const m={admin:['DL','Directie','av-a'],zorg:['ZC','Zorgcoördinator','av-z'],personeel:['CP','Personeelslid','av-p']};
-  const v=m[r]||m.admin;
-  document.getElementById('rav').textContent=v[0];
-  document.getElementById('rav').className='av '+v[2];
-  document.getElementById('rn').textContent=v[1];
+async function laadVeiligheid() {
+  const school = huidigSchool;
+  const tbody = document.getElementById('v-tabel');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Laden…</td></tr>';
+  const key = `veiligheid_${school}`;
+  if (!CFG.lists[key]||CFG.lists[key]==='PLACEHOLDER') { tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">List ID nog niet ingevuld — setup.html uitvoeren</td></tr>'; return; }
+  try {
+    const r = await graphGet(`/sites/${CFG.siteId}/lists/${CFG.lists[key]}/items?$expand=fields&$top=100`);
+    tbody.innerHTML = r.value.length ? r.value.map(i=>`<tr>
+      <td class="cl">${i.fields.Title||'—'}</td><td>${i.fields.Naam||'—'}</td><td>${i.fields.TypeMelding||'—'}</td>
+      <td>${schoolNaam(school)}</td>
+      <td><span class="badge ${i.fields.Status==='Afgewerkt'?'b-grn':'b-amb'}">${i.fields.Status||'—'}</span></td></tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen meldingen voor jouw school</td></tr>';
+  } catch(e) { tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:var(--red);padding:20px">Fout bij laden: ${e.message}</td></tr>`; }
 }
 
-function changeSchool(s){
-  const m={'cs-l':'CS — Lijsterstraat','cs-s':'CS — Stationsstraat','ko':'Kouterschool','te':'School Ter Elst'};
-  const lbl=m[s]||s;
-  document.getElementById('rs').textContent=lbl;
-  document.getElementById('sp').textContent=lbl;
+async function laadWelzijn() {
+  const school = huidigSchool;
+  const tbody = document.getElementById('w-tabel');
+  const key = `welzijn_${school}`;
+  if (!CFG.lists[key]||CFG.lists[key]==='PLACEHOLDER') { tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">List ID nog niet ingevuld</td></tr>'; return; }
+  try {
+    const r = await graphGet(`/sites/${CFG.siteId}/lists/${CFG.lists[key]}/items?$expand=fields&$top=100`);
+    tbody.innerHTML = r.value.length ? r.value.map(i=>`<tr>
+      <td class="cl">${i.fields.Title||'—'}</td><td>${i.fields.TypeMelding||'—'}</td>
+      <td>${schoolNaam(school)}</td><td>${i.fields.Toegewezen||'—'}</td>
+      <td><span class="badge b-pink">${i.fields.Status||'—'}</span></td></tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen welzijnsdossiers</td></tr>';
+  } catch(e) { tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:var(--red);padding:20px">Toegang geweigerd of fout: ${e.message}</td></tr>`; }
 }
 
-show('dashboard');
-const et=document.getElementById('es-t');
-if(et)et.value=new Date().toTimeString().slice(0,5);
+async function laadIncidenten() {
+  const school = huidigSchool;
+  const tbody = document.getElementById('i-tabel');
+  const key = `incidenten_${school}`;
+  if (!CFG.lists[key]||CFG.lists[key]==='PLACEHOLDER') { tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">List ID nog niet ingevuld</td></tr>'; return; }
+  try {
+    const r = await graphGet(`/sites/${CFG.siteId}/lists/${CFG.lists[key]}/items?$expand=fields&$top=100`);
+    tbody.innerHTML = r.value.length ? r.value.map(i=>`<tr>
+      <td class="cl">${i.fields.Title||'—'}</td>
+      <td>${i.fields.Omschrijving?.substring(0,30)||'—'}</td>
+      <td>${i.fields.TypeMelding==='Escalatie'?'<span class="badge b-red">Escalatie</span>':i.fields.TypeMelding||'—'}</td>
+      <td>${schoolNaam(school)}</td>
+      <td><span class="badge ${i.fields.Status==='Afgewerkt'?'b-grn':i.fields.TypeMelding==='Escalatie'?'b-red':'b-amb'}">${i.fields.Status||'—'}</span></td></tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen incidenten</td></tr>';
+  } catch(e) { tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:var(--red);padding:20px">Fout bij laden: ${e.message}</td></tr>`; }
+}
+
+window.addEventListener('load', async () => {
+  await msalClient.initialize();
+  const resp = await msalClient.handleRedirectPromise();
+  if (resp) { token = resp.accessToken; initApp(resp.account); }
+  else {
+    const accs = msalClient.getAllAccounts();
+    if (accs.length) {
+      try {
+        const t = await msalClient.acquireTokenSilent({ scopes:['Sites.ReadWrite.All','Mail.Send'], account:accs[0] });
+        token = t.accessToken; initApp(accs[0]);
+      } catch(e) {}
+    }
+  }
+});
 </script>
 </body>
 </html>
