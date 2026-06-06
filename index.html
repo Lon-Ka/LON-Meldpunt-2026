@@ -191,7 +191,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
       <div class="tsl lv">🛡 Veiligheid</div>
       <div class="tgrid">
         <div class="tc" onclick="selType('AO','sv',this)"><span class="tc-ic">🦺</span><div class="tc-t">Arbeidsongeval</div><div class="tc-s">Letsel tijdens werk of woon-werkverkeer</div></div>
-        <div class="tc" onclick="selType('EH','sv',this)"><span class="tc-ic">➕</span><div class="tc-t">EHBO</div><div class="tc-s">Eerste hulp zonder arts of verzuim</div></div>
+        <div class="tc" onclick="selType('EH','sv',this)"><span class="tc-ic">➕</span><div class="tc-t">EHBO</div><div class="tc-s">Eerste hulp aan personeelslid, leerling of bezoeker</div></div>
         <div class="tc" onclick="selType('LO','sv',this)"><span class="tc-ic">🎒</span><div class="tc-t">Leerlingongeval</div><div class="tc-s">Incident met letsel bij leerling</div></div>
         <div class="tc" onclick="selType('RI','sv',this)"><span class="tc-ic">⚠️</span><div class="tc-t">Risico-melding</div><div class="tc-s">Gevaarlijke situatie, geen letsel</div></div>
       </div>
@@ -219,8 +219,14 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
       </div>
       <div class="fsec"><div class="fsec-t">Omschrijving en letsel</div>
         <div class="frow"><div class="ff"><label>Omschrijving van het ongeval</label><textarea id="ao-omschr" placeholder="Beschrijf hoe het ongeval is gebeurd, de omstandigheden en de volgorde van gebeurtenissen..."></textarea></div></div>
-        <div class="frow"><div class="ff"><label>Aard van het letsel</label><input type="text" id="ao-letsel" placeholder="bv. kneuzing, breuk, snijwonde..."></div><div class="ff"><label>Aangetast lichaamsdeel</label><select><option>Hoofd / nek</option><option>Schouder</option><option>Arm / elleboog</option><option>Pols / hand</option><option>Rug / lenden</option><option>Knie</option><option>Enkel / voet</option><option>Meerdere</option><option>Andere</option></select></div></div>
-        <div class="frow"><div class="ff"><label>Verwachte afwezigheid</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Geen</span><span class="chip" onclick="cSel(this)">&lt; 1 week</span><span class="chip" onclick="cSel(this)">1–4 weken</span><span class="chip" onclick="cSel(this)">&gt; 4 weken</span></div></div><div class="ff"><label>Arts geraadpleegd?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja — AGODI vereist</span><span class="chip cs" onclick="cSel(this)">Nee</span></div></div></div>
+        <div class="frow"><div class="ff"><label>Aard van het letsel</label><select id="ao-letsel"><option value="">— Kies type —</option><optgroup label="Letsel door incident"><option>Kneuzing / verstuiking</option><option>Snijwonde / schaafwonde</option><option>Breuk</option><option>Spierletsel / scheuring</option><option>Rugletsel</option><option>Hoofdletsel / hersenschudding</option><option>Brandwonde</option><option>Oogletsel</option><option>Tandletsel</option></optgroup><optgroup label="Medische toestand tijdens werk"><option>Onwel / flauwte</option><option>Ademhalingsproblemen</option><option>Hartproblemen</option><option>Andere medische toestand</option></optgroup><option>Andere</option></select></div><div class="ff"><label>Aangetast lichaamsdeel</label><select><option>Hoofd / nek</option><option>Schouder</option><option>Arm / elleboog</option><option>Pols / hand</option><option>Rug / lenden</option><option>Knie</option><option>Enkel / voet</option><option>Meerdere</option><option>Andere</option></select></div></div>
+        <div class="frow"><div class="ff"><label>Verwachte afwezigheid</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Geen</span><span class="chip" onclick="cSel(this)">&lt; 1 week</span><span class="chip" onclick="cSel(this)">1–4 weken</span><span class="chip" onclick="cSel(this)">&gt; 4 weken</span></div></div><div class="ff"><label>Genomen actie</label><div class="chips" id="ao-actie">
+<span class="chip" onclick="chipMulti(this)">EHBO ter plaatse</span>
+<span class="chip" onclick="chipMulti(this)">Huisarts geraadpleegd (AGODI vereist)</span>
+<span class="chip" onclick="chipMulti(this)">Ambulance opgeroepen</span>
+<span class="chip" onclick="chipMulti(this)">Ziekenhuis</span>
+<span class="chip" onclick="chipMulti(this)">Geen verdere actie</span>
+</div><div class="fnote" style="margin-top:4px">Meerdere opties mogelijk · Bij arts geraadpleegd: AGODI-aangifte vereist binnen 8 dagen</div></div></div>
       </div>
       <div class="fsec"><div class="fsec-t">Getuigen (optioneel)</div>
         <div id="gao"><div class="grow"><input type="text" placeholder="Naam getuige 1"><button class="gdel" onclick="this.parentNode.remove()">×</button></div></div>
@@ -244,11 +250,34 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
 
     <!-- FORM EH -->
     <div id="form-EH" class="form-body" style="display:none">
+      <div class="alert al-b" style="font-size:12px;margin-bottom:10px">💡 EHBO is voor eerste hulp zonder verdere medische opvolging. Werd de betrokkene doorverwezen naar een arts? Gebruik dan <strong>Arbeidsongeval</strong> (personeelslid) of <strong>Leerlingongeval</strong> (leerling).</div>
       <div class="fsec"><div class="fsec-t">EHBO-registratie</div>
         <div class="frow"><div class="ff"><label>School</label><select><option>CS — Lijsterstraat</option><option>CS — Stationsstraat</option><option>Kouterschool</option><option>School Ter Elst</option></select></div><div class="ff"><label>Datum</label><input type="date"></div><div class="ff"><label>Tijdstip</label><input type="time" value="10:00"></div></div>
         <div class="frow"><div class="ff"><label>Naam betrokkene</label><input type="text" placeholder="Voornaam Naam"><div class="fnote">🔒 Persoonsgegevens — beveiligd</div></div><div class="ff"><label>Hoedanigheid</label><select><option>Personeelslid</option><option>Leerling</option><option>Bezoeker</option></select></div></div>
+        <div class="frow"><div class="ff"><label>Aard / reden</label><select><option value="">— Kies type —</option><optgroup label="Letsel"><option>Snijwonde / schaafwonde</option><option>Kneuzing / verstuiking</option><option>Breuk (vermoeden)</option><option>Brandwonde</option><option>Oogletsel</option><option>Hoofdletsel / hersenschudding</option><option>Tandletsel</option><option>Andere verwonding</option></optgroup><optgroup label="Medische toestand"><option>Onwel / flauwte</option><option>Steek insect / allergische reactie</option><option>Ademhalingsproblemen</option><option>Diabetes / hypoglycemie</option><option>Epilepsie / toeval</option><option>Hartproblemen</option><option>Astma-aanval</option><option>Andere medische toestand</option></optgroup></select></div></div>
         <div class="frow"><div class="ff"><label>Omschrijving / EHBO-handelingen</label><textarea placeholder="Welke eerste hulp is verleend? Wat was de aanleiding?"></textarea></div></div>
-        <div class="frow"><div class="ff"><label>Verzorgd door</label><input type="text" placeholder="Naam EHBO-verantwoordelijke"></div><div class="ff"><label>Doorverwezen naar arts?</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee — enkel EHBO</span><span class="chip" onclick="cSel(this)">Ja → arbeidsongeval</span></div></div></div>
+        <div class="frow"><div class="ff"><label>Verzorgd door</label><input type="text" placeholder="Naam EHBO-verantwoordelijke"></div><div class="ff"><label>Genomen actie</label><div class="chips" id="ehbo-actie">
+<span class="chip" onclick="chipMulti(this)">EHBO ter plaatse</span>
+<span class="chip" onclick="chipMulti(this)">Arts gecontacteerd</span>
+<span class="chip" onclick="chipMulti(this)">Ouder verwittigd</span>
+<span class="chip" onclick="chipMulti(this)">Ambulance opgeroepen</span>
+<span class="chip" onclick="chipMulti(this)">Ziekenhuis</span>
+<span class="chip" onclick="chipMulti(this)">Leerling naar huis</span>
+<span class="chip" onclick="chipMulti(this)">Geen verdere actie</span>
+</div><div class="fnote" style="margin-top:4px">Meerdere opties mogelijk</div></div></div>
+      </div>
+      <div class="fsec"><div class="fsec-t">Oorzaak</div>
+        <div class="frow"><div class="ff"><label>Oorzaak / aanleiding</label><div class="chips" id="ehbo-oorzaak">
+<span class="chip" onclick="chipMulti(this)">Val</span>
+<span class="chip" onclick="chipMulti(this)">Botsing</span>
+<span class="chip" onclick="chipMulti(this)">Contact met ander kind</span>
+<span class="chip" onclick="chipMulti(this)">Sportongeval</span>
+<span class="chip" onclick="chipMulti(this)">(Gekende) gezondheidsproblematiek</span>
+<span class="chip" onclick="chipMulti(this)">Steek / beet insect</span>
+<span class="chip" onclick="chipMulti(this)">Allergische reactie</span>
+<span class="chip" onclick="chipMulti(this)">Onbekend</span>
+<span class="chip" onclick="chipMulti(this)">Andere</span>
+</div><div class="fnote" style="margin-top:4px">Meerdere opties mogelijk</div></div></div>
       </div>
       <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('EH','v')">✅ EHBO registreren</button></div>
     </div>
@@ -260,9 +289,25 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
         <div class="frow"><div class="ff"><label>School / klas</label><input type="text" placeholder="bv. CS Lijsterstraat — 3A"></div><div class="ff"><label>Datum</label><input type="date"></div><div class="ff"><label>Tijdstip</label><input type="time" value="11:00"></div></div>
         <div class="frow"><div class="ff"><label>Naam leerling</label><input type="text" placeholder="Voornaam Naam"><div class="fnote">🔒 Minderjarige — extra GDPR-bescherming (art. 8 AVG)</div></div><div class="ff"><label>Geboortejaar</label><input type="number" placeholder="bv. 2016" min="2000" max="2024"></div></div>
         <div class="frow"><div class="ff"><label>Omschrijving van het incident</label><textarea placeholder="Hoe is het incident ontstaan?"></textarea></div></div>
-        <div class="frow"><div class="ff"><label>Aard van het letsel</label><input type="text" placeholder="bv. schaafwonde, verstuiking..."></div><div class="ff"><label>Medische tussenkomst</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee / EHBO</span><span class="chip" onclick="cSel(this)">Huisarts</span><span class="chip" onclick="cSel(this)">Hospitaal</span></div></div></div>
+        <div class="frow"><div class="ff"><label>Aard van het letsel</label><select><option value="">— Kies type —</option><optgroup label="Letsel"><option>Schaafwonde / snijwonde</option><option>Kneuzing / verstuiking</option><option>Breuk (vermoeden)</option><option>Tandletsel</option><option>Hoofdletsel / hersenschudding</option><option>Oogletsel</option><option>Brandwonde</option></optgroup><optgroup label="Medische toestand"><option>Onwel / flauwte</option><option>Steek insect / allergische reactie</option><option>Ademhalingsproblemen</option><option>Diabetes / hypoglycemie</option><option>Epilepsie / toeval</option><option>Hartproblemen</option><option>Astma-aanval</option></optgroup><option>Andere</option></select></div><div class="ff"><label>Medische tussenkomst</label><div class="chips"><span class="chip cs" onclick="cSel(this)">Nee / EHBO</span><span class="chip" onclick="cSel(this)">Huisarts</span><span class="chip" onclick="cSel(this)">Hospitaal</span></div></div></div>
         <div class="frow"><div class="ff"><label>Ouders verwittigd?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja</span><span class="chip cs" onclick="cSel(this)">Nog te doen</span></div></div><div class="ff"><label>Verzekeringsmelding?</label><div class="chips"><span class="chip" onclick="cSel(this)">Ja</span><span class="chip cs" onclick="cSel(this)">Nee</span></div></div></div>
-        <div class="frow"><div class="ff"><label>Bijlage</label><div class="upz" onclick="addF('flo','Foto letsel.jpg')"><p>📎 Foto toevoegen</p><small>JPG, PNG — max 10 MB</small></div><div id="flo"></div></div></div>
+        <div class="fsec"><div class="fsec-t">Oorzaak</div>
+        <div class="frow"><div class="ff"><label>Oorzaak / aanleiding</label><div class="chips" id="lo-oorzaak">
+<span class="chip" onclick="chipMulti(this)">Val</span>
+<span class="chip" onclick="chipMulti(this)">Botsing</span>
+<span class="chip" onclick="chipMulti(this)">Contact met ander kind</span>
+<span class="chip" onclick="chipMulti(this)">Sportongeval</span>
+<span class="chip" onclick="chipMulti(this)">(Gekende) gezondheidsproblematiek</span>
+<span class="chip" onclick="chipMulti(this)">Steek / beet insect</span>
+<span class="chip" onclick="chipMulti(this)">Allergische reactie</span>
+<span class="chip" onclick="chipMulti(this)">Op speelplaats</span>
+<span class="chip" onclick="chipMulti(this)">In de klas</span>
+<span class="chip" onclick="chipMulti(this)">Tijdens sport / turnles</span>
+<span class="chip" onclick="chipMulti(this)">Onbekend</span>
+<span class="chip" onclick="chipMulti(this)">Andere</span>
+</div><div class="fnote" style="margin-top:4px">Meerdere opties mogelijk</div></div></div>
+      </div>
+      <div class="frow"><div class="ff"><label>Bijlage</label><div class="upz" onclick="addF('flo','Foto letsel.jpg')"><p>📎 Foto toevoegen</p><small>JPG, PNG — max 10 MB</small></div><div id="flo"></div></div></div>
       </div>
       <div class="brow"><button class="btn" onclick="resetA()">Annuleren</button><button class="btn btn-p" onclick="doSubmit('LO','v')">📤 Leerlingongeval melden</button></div>
     </div>
@@ -482,6 +527,9 @@ function cSel(el) {
   el.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('cs','cw','cr'));
   el.classList.add('cs');
 }
+function chipMulti(el) {
+  el.classList.toggle('cs');
+}
 
 function addG(id) {
   gCounts[id]=(gCounts[id]||1)+1;
@@ -545,7 +593,7 @@ async function doSubmit(prefix, pijler) {
         try {
           await graphPost(`/me/sendMail`, {
             message:{ subject:`[LON-Meldpunt] Nieuwe melding: ${prefix} — ${schoolNaam(school)}`,
-              body:{contentType:'Text',content:`Nieuwe melding ingediend:\n\nReferentie: ${ref}\nType: ${prefix}\nSchool: ${schoolNaam(school)}\nDatum: ${now.toLocaleDateString('nl-BE')}\nIngediend door: ${huidigUser?.name||'—'}\n\nBeheerspaneel: https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html`},
+              body:{contentType:'Text',content:`Nieuwe melding ingediend:\n\nReferentie: ${ref}\nType: ${prefix}\nSchool: ${schoolNaam(school)}\nDatum: ${now.toLocaleDateString('nl-BE')}\nIngediend door: ${huidigUser?.name||'—'}\n\nBeheerspaneel: https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html\n\nTip: kopieer en plak de URL indien de link niet werkt.`},
               toRecipients:[{emailAddress:{address:directieEmail}}]
             }, saveToSentItems:false
           });
