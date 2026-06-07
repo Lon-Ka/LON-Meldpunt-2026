@@ -234,8 +234,12 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
         <div class="fnote" style="margin-top:6px">🔒 Getuigengegevens worden vertrouwelijk bewaard voor dossieropvolging</div>
       </div>
       <div class="fsec"><div class="fsec-t">Bijlagen — medisch attest, foto letsel</div>
-        <div class="upz" onclick="addF('fao','Medisch attest.pdf')"><p>📎 Klik om bestand toe te voegen</p><small>PDF, JPG, PNG — max 10 MB · meerdere bestanden mogelijk</small></div>
-        <div id="fao"></div>
+        <div class="upz" onclick="document.getElementById('file-ao').click()">
+  <p>📎 Klik om bestand toe te voegen</p>
+  <small>PDF, JPG, PNG — max 10 MB · meerdere bestanden mogelijk</small>
+</div>
+<input type="file" id="file-ao" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleFiles(this,'fao')">
+<div id="fao"></div>
         <div class="fnote" style="margin-top:5px">🔒 Medische documenten worden AES-256 versleuteld opgeslagen. Toegang beperkt tot directie en verzekeringsadviseur.</div>
       </div>
       <div class="fsec"><div class="fsec-t">GDPR-toestemming</div>
@@ -531,6 +535,71 @@ function cSel(el) {
   el.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('cs','cw','cr'));
   el.classList.add('cs');
 }
+
+// ── BESTANDSBEHEER ──
+var fileStore = { fao:[], flo:[], fri:[], fag:[] };
+
+function handleFiles(input, containerId) {
+  var files = Array.from(input.files);
+  var MAX = 10 * 1024 * 1024; // 10 MB
+  files.forEach(function(file) {
+    if (file.size > MAX) { alert(file.name + ' is groter dan 10 MB en wordt overgeslagen.'); return; }
+    fileStore[containerId] = fileStore[containerId] || [];
+    fileStore[containerId].push(file);
+    var d = document.getElementById(containerId);
+    var item = document.createElement('div');
+    item.className = 'fitem';
+    item.dataset.filename = file.name;
+    item.innerHTML = '<span>📎 ' + file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)</span>'
+      + '<span class="fenc">🔒 Versleuteld</span>'
+      + '<button class="fdel" onclick="removeFile(\'' + containerId + '\',\'' + file.name + '\',this)">×</button>';
+    d.appendChild(item);
+  });
+  input.value = ''; // reset zodat hetzelfde bestand opnieuw gekozen kan worden
+}
+
+function removeFile(containerId, filename, btn) {
+  fileStore[containerId] = (fileStore[containerId]||[]).filter(function(f){ return f.name !== filename; });
+  btn.parentNode.remove();
+}
+
+async function uploadBijlagen(containerId, ref, school) {
+  var files = fileStore[containerId] || [];
+  if (files.length === 0) return [];
+  var uploaded = [];
+  // Bepaal doelmap op basis van type
+  var mapNaam = containerId === 'fao' ? 'Bijlagen_Medisch' : 'Bijlagen_Veiligheid';
+  if (containerId === 'fag') mapNaam = 'Bijlagen_Incidenten';
+  var folderPath = mapNaam + '/' + ref;
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    try {
+      // Maak upload sessie aan
+      var sessieResp = await fetch(
+        'https://graph.microsoft.com/v1.0/sites/' + CFG.siteId + '/drive/root:/' + folderPath + '/' + file.name + ':/createUploadSession',
+        { method:'POST', headers:{ 'Authorization':'Bearer ' + token, 'Content-Type':'application/json' },
+          body: JSON.stringify({ item:{ '@microsoft.graph.conflictBehavior':'rename' } }) }
+      );
+      if (!sessieResp.ok) throw new Error('Sessie fout: ' + sessieResp.status);
+      var sessie = await sessieResp.json();
+      // Upload bestand
+      var uploadResp = await fetch(sessie.uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Range': 'bytes 0-' + (file.size-1) + '/' + file.size, 'Content-Length': file.size },
+        body: file
+      });
+      if (uploadResp.ok || uploadResp.status === 201) {
+        uploaded.push(file.name);
+      }
+    } catch(e) {
+      console.error('Upload fout voor ' + file.name + ':', e.message);
+    }
+  }
+  // Reset fileStore na upload
+  fileStore[containerId] = [];
+  document.getElementById(containerId).innerHTML = '';
+  return uploaded;
+}
 function chipMulti(el) {
   el.classList.toggle('cs');
 }
@@ -543,15 +612,8 @@ function addG(id) {
   d.appendChild(r);
 }
 
-function addF(id, def) {
-  fCounts[id]=(fCounts[id]||0)+1;
-  const names=FN[id]||[def];
-  const name=names[(fCounts[id]-1)%names.length];
-  const d=document.getElementById(id);
-  const item=document.createElement('div'); item.className='fitem';
-  item.innerHTML=`<span>📎 ${name}</span><span class="fenc">🔒 Versleuteld</span><button class="fdel" onclick="this.parentNode.remove()">×</button>`;
-  d.appendChild(item);
-}
+// addF is vervangen door handleFiles met echte file input
+function addF(id, def) { /* legacy - niet meer gebruikt */ }
 
 async function graphPost(url, body) {
   const r=await fetch(`https://graph.microsoft.com/v1.0${url}`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -584,7 +646,15 @@ async function doSubmit(prefix, pijler) {
   var pfxMap = {AO:'AO',EH:'EH',LO:'LO',RI:'RI',WE:'WE',AG:'AG',ES:'ES'};
   var ref = (pfxMap[prefix]||'ME') + '-' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(Math.floor(Math.random()*90)+10);
 
-  // 1. Opslaan in SharePoint
+  // 1. Upload bijlagen naar SharePoint
+  var bijlagenMap = { AO:'fao', LO:'flo', RI:'fri', AG:'fag', OB:'fag' };
+  var bijlagenContainer = bijlagenMap[prefix];
+  var uploadedFiles = [];
+  if (bijlagenContainer) {
+    uploadedFiles = await uploadBijlagen(bijlagenContainer, ref, school);
+  }
+
+  // 2. Opslaan in SharePoint
   if (listId && listId !== 'PLACEHOLDER') {
     try {
       var naam = (document.getElementById('ao-naam') || {}).value || (huidigUser && huidigUser.name) || 'onbekend';
@@ -592,6 +662,7 @@ async function doSubmit(prefix, pijler) {
       await graphPost('/sites/' + CFG.siteId + '/lists/' + listId + '/items', {
         fields: { Title:ref, TypeMelding:prefix, School:school, Naam:naam,
           Omschrijving:omschr, Status:'In behandeling',
+          Bijlagen: uploadedFiles.length > 0 ? uploadedFiles.join(', ') : '',
           Ingediend:now.toISOString(), IngediendDoor:(huidigUser && huidigUser.username) || '—' }
       });
     } catch(e) { console.error('SharePoint fout:', e.message); }
