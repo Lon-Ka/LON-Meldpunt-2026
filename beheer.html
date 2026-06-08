@@ -526,7 +526,7 @@ async function laadDashboard() {
           if (st==='Afgewerkt'||st==='Afgesloten') af++;
           else open++;
           if (i.fields.TypeMelding==='Escalatie') esc++;
-          recent.push({...i.fields,_school:sk,_type:type,_id:i.id});
+          recent.push({...i.fields,_school:sk,_type:type,_id:i.id,_listId:CFG.lists[`${type}_${sk}`],_itemId:i.id});
         });
       } catch(e) {}
     }
@@ -539,7 +539,7 @@ async function laadDashboard() {
   recent.sort((a,b)=>new Date(b.Ingediend||0)-new Date(a.Ingediend||0));
   window.dbItems = recent.slice(0,8);
   tbody.innerHTML = window.dbItems.map((i,idx)=>`
-    <tr onclick="openDossier(window.dbItems[${idx}],'${i.TypeMelding||'ME'}')" style="cursor:pointer">
+    <tr onclick="openDossier(window.dbItems[${idx}],'AO')" style="cursor:pointer">
     <td class="cl">${ref(i.TypeMelding?.substring(0,2)||'ME',idx+1)}</td>
     <td>${i.Naam||i.BetrokkenMedewerker||'—'}</td>
     <td>${i.TypeMelding||'—'}</td>
