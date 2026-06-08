@@ -58,6 +58,7 @@ td code{font-family:'Courier New',monospace;font-size:11px;background:#f0f4f8;pa
       <tr><td><code>Ernst</code></td><td>Tekst (enkelvoudig)</td><td>Alle Veiligheid + Incidenten</td><td>Ernstgraad: Laag / Gemiddeld / Hoog / Kritiek</td></tr>
       <tr><td><code>PreventiefMaatregel</code></td><td>Tekst (meerdere regels)</td><td>Alle Veiligheid + Incidenten</td><td>Maatregelen om herhaling te voorkomen</td></tr>
       <tr><td><code>CorrigerendMaatregel</code></td><td>Tekst (meerdere regels)</td><td>Alle Veiligheid + Incidenten</td><td>Directe herstelacties</td></tr>
+      <tr><td><code>Effectiviteit</code></td><td>Tekst (enkelvoudig)</td><td>Alle Veiligheid + Incidenten</td><td>Effectief / Gedeeltelijk / Niet effectief</td></tr>
       <tr><td><code>Opvolging</code></td><td>Tekst (meerdere regels)</td><td>Alle lijsten (indien ontbreekt)</td><td>Opvolgnotities beheerders</td></tr>
     </table>
   </div>
@@ -86,6 +87,7 @@ const NIEUWE_KOLOMMEN_VW = [
   { name: 'Ernst', type: 'text', multi: false },
   { name: 'PreventiefMaatregel', type: 'text', multi: true },
   { name: 'CorrigerendMaatregel', type: 'text', multi: true },
+  { name: 'Effectiviteit', type: 'text', multi: false },
   { name: 'Opvolging', type: 'text', multi: true },
 ];
 const NIEUWE_KOLOMMEN_WELZIJN = [
