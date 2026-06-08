@@ -299,18 +299,46 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
     </div>
     <div id="modal-body"></div>
     <div id="modal-opvolging" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:7px">Opvolgnotitie toevoegen</div>
-      <textarea id="modal-notitie" style="width:100%;font-family:inherit;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;min-height:70px;resize:vertical;outline:none" placeholder="Voeg een notitie toe over de opvolging van dit dossier..."></textarea>
-      <div style="display:flex;gap:7px;justify-content:space-between;margin-top:8px;align-items:center">
-        <div id="modal-status-wrap" style="display:flex;align-items:center;gap:7px">
-          <label style="font-size:11px;color:var(--muted)">Status:</label>
-          <select id="modal-status" style="font-size:11px;font-family:inherit;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;outline:none">
+      <div style="font-size:12px;font-weight:600;color:var(--blauw);margin-bottom:12px">Opvolging &amp; maatregelen</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:600;display:block;margin-bottom:3px">Status</label>
+          <select id="modal-status" style="width:100%;font-size:12px;font-family:inherit;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 9px;outline:none">
             <option>In behandeling</option>
             <option>In opvolging</option>
             <option>Afgewerkt</option>
             <option>Afgesloten</option>
           </select>
         </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:600;display:block;margin-bottom:3px">Ernstgraad</label>
+          <select id="modal-ernst" style="width:100%;font-size:12px;font-family:inherit;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 9px;outline:none">
+            <option value="">— Niet bepaald —</option>
+            <option value="Laag">🟢 Laag — geen letsel / minimale impact</option>
+            <option value="Gemiddeld">🟡 Gemiddeld — beperkt letsel / tijdelijk</option>
+            <option value="Hoog">🟠 Hoog — ernstig letsel / langdurig</option>
+            <option value="Kritiek">🔴 Kritiek — blijvend letsel / levensgevaar</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--muted);font-weight:600;display:block;margin-bottom:3px">Opvolgnotitie</label>
+        <textarea id="modal-notitie" style="width:100%;font-family:inherit;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;min-height:60px;resize:vertical;outline:none" placeholder="Beschrijf de stand van zaken en genomen stappen..."></textarea>
+      </div>
+
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--muted);font-weight:600;display:block;margin-bottom:3px">Preventieve maatregelen</label>
+        <textarea id="modal-preventief" style="width:100%;font-family:inherit;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;min-height:60px;resize:vertical;outline:none" placeholder="Welke maatregelen worden genomen om herhaling te voorkomen?"></textarea>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;color:var(--muted);font-weight:600;display:block;margin-bottom:3px">Corrigerende maatregelen</label>
+        <textarea id="modal-corrigerend" style="width:100%;font-family:inherit;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;min-height:60px;resize:vertical;outline:none" placeholder="Welke directe herstelacties zijn of worden uitgevoerd?"></textarea>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end">
         <button class="btn btn-p btn-sm" onclick="slaOpvolgingOp()">💾 Opslaan</button>
       </div>
     </div>
@@ -647,6 +675,9 @@ function openDossier(item, type) {
     ['Bijlagen', item.Bijlagen || '—'],
     ['AGODI vereist', item.AgodiVereist ? 'Ja' : item.AgodiVereist === false ? 'Nee' : '—'],
     ['Status', item.Status || 'In behandeling'],
+    ['Ernst', item.Ernst || '—'],
+    ['Preventieve maatregelen', item.PreventiefMaatregel || '—'],
+    ['Corrigerende maatregelen', item.CorrigerendMaatregel || '—'],
     ['Opvolging', item.Opvolging || '—'],
   ].filter(function(r){ return r[1] && r[1] !== '—'; });
 
@@ -658,11 +689,14 @@ function openDossier(item, type) {
   html += '</table>';
   document.getElementById('modal-body').innerHTML = html;
 
-  // Zet huidige status in selector
+  // Vul bestaande waarden in
   var statusEl = document.getElementById('modal-status');
   if (item.Status) statusEl.value = item.Status;
-
-  document.getElementById('modal-notitie').value = '';
+  var ernstEl = document.getElementById('modal-ernst');
+  if (item.Ernst) ernstEl.value = item.Ernst;
+  document.getElementById('modal-notitie').value = item.Opvolging || '';
+  document.getElementById('modal-preventief').value = item.PreventiefMaatregel || '';
+  document.getElementById('modal-corrigerend').value = item.CorrigerendMaatregel || '';
   document.getElementById('modal-overlay').style.display = 'block';
 }
 
@@ -672,9 +706,18 @@ async function slaOpvolgingOp() {
   }
   var notitie = document.getElementById('modal-notitie').value;
   var status = document.getElementById('modal-status').value;
+  var ernst = document.getElementById('modal-ernst').value;
+  var preventief = document.getElementById('modal-preventief').value;
+  var corrigerend = document.getElementById('modal-corrigerend').value;
   try {
     await graphPatch('/sites/' + CFG.siteId + '/lists/' + huidigDossier._listId + '/items/' + huidigDossier._itemId, {
-      fields: { Status: status, Opvolging: notitie }
+      fields: {
+        Status: status,
+        Opvolging: notitie,
+        Ernst: ernst,
+        PreventiefMaatregel: preventief,
+        CorrigerendMaatregel: corrigerend
+      }
     });
     alert('Opvolging opgeslagen.');
     document.getElementById('modal-overlay').style.display = 'none';
