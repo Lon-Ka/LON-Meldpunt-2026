@@ -286,6 +286,37 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
 </div>
 </div>
 
+<!-- DETAIL MODAL -->
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;overflow-y:auto" onclick="sluitModal(event)">
+  <div id="modal-card" style="background:#fff;border-radius:12px;max-width:640px;margin:40px auto;padding:24px 26px;position:relative" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px">
+      <div>
+        <div id="modal-ref" style="font-family:'Courier New',monospace;font-size:13px;font-weight:600;color:var(--blauw);margin-bottom:3px"></div>
+        <div id="modal-titel" style="font-size:16px;font-weight:600;color:var(--tekst)"></div>
+        <div id="modal-meta" style="font-size:11px;color:var(--muted);margin-top:3px"></div>
+      </div>
+      <button onclick="sluitModal()" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:13px;flex-shrink:0">✕ Sluiten</button>
+    </div>
+    <div id="modal-body"></div>
+    <div id="modal-opvolging" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:7px">Opvolgnotitie toevoegen</div>
+      <textarea id="modal-notitie" style="width:100%;font-family:inherit;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;min-height:70px;resize:vertical;outline:none" placeholder="Voeg een notitie toe over de opvolging van dit dossier..."></textarea>
+      <div style="display:flex;gap:7px;justify-content:space-between;margin-top:8px;align-items:center">
+        <div id="modal-status-wrap" style="display:flex;align-items:center;gap:7px">
+          <label style="font-size:11px;color:var(--muted)">Status:</label>
+          <select id="modal-status" style="font-size:11px;font-family:inherit;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;outline:none">
+            <option>In behandeling</option>
+            <option>In opvolging</option>
+            <option>Afgewerkt</option>
+            <option>Afgesloten</option>
+          </select>
+        </div>
+        <button class="btn btn-p btn-sm" onclick="slaOpvolgingOp()">💾 Opslaan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const CFG = {
   clientId: '08dcc1b5-6041-4e67-ba6f-14650d4e6e62',
@@ -399,14 +430,14 @@ function statusBadge(status) {
 function ref(type, id) { return `${type}-2026-${String(id).padStart(2,'0')}`; }
 
 async function laadLijst(sleutel, type) {
-  const scholen = huidigSchool ? [huidigSchool] : CFG.scholen.map(s=>s.sleutel);
+  const scholen = huidigSchoolFilter ? huidigSchoolFilter : (huidigSchool && huidigSchool !== 'hk_dk' ? [huidigSchool] : CFG.scholen.map(s=>s.sleutel));
   const items = [];
   for (const sk of scholen) {
     const listKey = `${type}_${sk}`;
     if (!CFG.lists[listKey] || CFG.lists[listKey]==='PLACEHOLDER') continue;
     try {
       const r = await graphGet(`/sites/${CFG.siteId}/lists/${CFG.lists[listKey]}/items?$expand=fields&$top=200`);
-      r.value.forEach(i => items.push({...i.fields, _school:sk, _id:i.id}));
+      r.value.forEach(i => items.push({...i.fields, _school:sk, _id:i.id, _listId:CFG.lists[listKey], _itemId:i.id}));
     } catch(e) {}
   }
   return items;
@@ -491,11 +522,13 @@ function show(s) {
   if (s==='beheerders') laadBeheerders();
 }
 
+var aoItems = [];
 async function laadAO() {
   const items = await laadLijst('ao','veiligheid');
-  const ao = items.filter(i=>i.TypeMelding==='Arbeidsongeval'||!i.TypeMelding);
+  aoItems = items.filter(i=>i.TypeMelding==='Arbeidsongeval'||!i.TypeMelding);
+  var ao = items.filter(i=>i.TypeMelding==='Arbeidsongeval'||!i.TypeMelding);
   const kanAgodi = ['admin','staf'].includes(huidigeBeheerder?.rol);
-  document.getElementById('ao-tabel').innerHTML = ao.map((i,idx)=>`<tr>
+  document.getElementById('ao-tabel').innerHTML = ao.map((i,idx)=>`<tr onclick="openDossier(ao[${idx}],'AO')" style="cursor:pointer">
     <td class="cl">${ref('AO',idx+1)}</td><td>${i.Naam||'—'}</td><td>${i.Letsel||'—'}</td>
     <td>${schoolNaam(i._school)}</td><td>${i.AgodiVereist?'<span class="badge b-amb">Vereist</span>':'—'}</td>
     <td>${statusBadge(i.Status)}</td>
@@ -503,46 +536,53 @@ async function laadAO() {
     </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Geen arbeidsongevallen gevonden</td></tr>';
   // Vul AGODI tab ook in
   const agodiItems = ao.filter(i=>i.AgodiVereist&&i.Status!=='Afgewerkt');
-  document.getElementById('ao-agodi-tabel').innerHTML = agodiItems.map((i,idx)=>`<tr>
+  document.getElementById('ao-agodi-tabel').innerHTML = agodiItems.map((i,idx)=>`<tr onclick="openDossier(ao[${idx}],'AO')" style="cursor:pointer">
     <td class="cl">${ref('AO',idx+1)}</td><td>${i.Naam||'—'}</td><td>${i.Letsel||'—'}</td>
     <td>${schoolNaam(i._school)}</td><td><span class="badge b-amb">Vereist</span></td>
     <td>${kanAgodi?`<button class="btn btn-sm btn-p" onclick="stuurAgodiDoor('${ref('AO',idx+1)}','${i.Naam||''}','${i._school}')">📤 Doorsturen naar AGODI</button>`:'—'}</td>
     </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Geen openstaande AGODI-aangiftes</td></tr>';
 }
+var ehboItems = [];
 async function laadEHBO() {
   const items = await laadLijst('ehbo','veiligheid');
-  const ehbo = items.filter(i=>i.TypeMelding==='EHBO');
+  ehboItems = items.filter(i=>i.TypeMelding==='EHBO');
+  const ehbo = ehboItems;
   document.getElementById('ehbo-tabel').innerHTML = ehbo.map((i,idx)=>`<tr>
     <td class="cl">${ref('EH',idx+1)}</td><td>${i.Naam||'—'}</td><td>${i.Functie||'—'}</td>
     <td>${schoolNaam(i._school)}</td><td>${statusBadge(i.Status)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen EHBO-registraties</td></tr>';
 }
+var loItems = [];
 async function laadLO() {
   const items = await laadLijst('lo','veiligheid');
-  const lo = items.filter(i=>i.TypeMelding==='Leerlingongeval');
+  loItems = items.filter(i=>i.TypeMelding==='Leerlingongeval');
+  const lo = loItems;
   const kanVerzeker = ['admin','staf','secretariaat'].includes(huidigeBeheerder?.rol);
-  document.getElementById('lo-tabel').innerHTML = lo.map((i,idx)=>`<tr>
+  document.getElementById('lo-tabel').innerHTML = lo.map((i,idx)=>`<tr onclick="openDossier(lo[${idx}],'LO')" style="cursor:pointer">
     <td class="cl">${ref('LO',idx+1)}</td><td>${i.Omschrijving?.substring(0,20)||'—'}</td><td>${i.Letsel||'—'}</td>
     <td>${schoolNaam(i._school)}</td><td>${i.OudersVerwittigd?'<span class="badge b-grn">Ja</span>':'<span class="badge b-red">Nee</span>'}</td>
     <td>${statusBadge(i.Status)}</td>
     <td>${kanVerzeker&&i.Letsel?`<button class="btn btn-sm btn-p" onclick="stuurVerzekering('${ref('LO',idx+1)}','${i._school}')">📤 Verzekering</button>`:'—'}</td>
     </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Geen leerlingenongevallen</td></tr>';
 }
+var riItems = [];
 async function laadRisico() {
   const items = await laadLijst('risico','veiligheid');
-  const ri = items.filter(i=>i.TypeMelding==='Risico-melding');
+  riItems = items.filter(i=>i.TypeMelding==='Risico-melding');
+  const ri = riItems;
   document.getElementById('ri-tabel').innerHTML = ri.map((i,idx)=>`<tr>
     <td class="cl">${ref('RI',idx+1)}</td><td>${i.Omschrijving?.substring(0,30)||'—'}</td>
     <td>${statusBadge(i.Ernst||'—')}</td><td>${schoolNaam(i._school)}</td><td>${statusBadge(i.Status)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen risico-meldingen</td></tr>';
 }
+var welzijnItems = [];
 async function laadWelzijn() {
-  const items = await laadLijst('welzijn','welzijn');
-  document.getElementById('w-tabel').innerHTML = items.map((i,idx)=>`<tr>
+  welzijnItems = await laadLijst('welzijn','welzijn');
+  document.getElementById('w-tabel').innerHTML = welzijnItems.map((i,idx)=>`<tr onclick='openDossier(welzijnItems[${idx}],"WE")' style='cursor:pointer'>
     <td class="cl">${ref('WE',idx+1)}</td><td>${i.TypeMelding||'—'}</td>
     <td>${schoolNaam(i._school)}</td><td>${i.Toegewezen||'—'}</td><td>${statusBadge(i.Status)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen welzijnsdossiers</td></tr>';
 }
 async function laadIncidenten() {
-  const items = await laadLijst('inc','incidenten');
-  document.getElementById('inc-tabel').innerHTML = items.map((i,idx)=>`<tr>
+  incidentItems = await laadLijst('inc','incidenten');
+  document.getElementById('inc-tabel').innerHTML = incidentItems.map((i,idx)=>`<tr onclick='openDossier(incidentItems[${idx}],"INC")' style='cursor:pointer'>
     <td class="cl">${ref(i.TypeMelding==='Escalatie'?'ES':i.TypeMelding==='Agressie derden'?'AG':'IN',idx+1)}</td>
     <td>${i.Omschrijving?.substring(0,30)||'—'}</td>
     <td>${i.TypeMelding==='Escalatie'?'<span class="badge b-red">Escalatie</span>':i.TypeMelding||'—'}</td>
@@ -566,6 +606,72 @@ function stab(el, contentId) {
   const screen = el.closest('.screen');
   screen.querySelectorAll('[id^="ao-"],[id^="inc-"]').forEach(d=>d.style.display='none');
   const ct = document.getElementById(contentId); if(ct) ct.style.display='block';
+}
+
+function sluitModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').style.display = 'none';
+    huidigDossier = null;
+  }
+}
+
+var huidigDossier = null;
+
+function openDossier(item, type) {
+  huidigDossier = item;
+  var ref = item.Title || '—';
+  var school = schoolNaam(item._school || item.School || '');
+  var datum = item.Ingediend ? new Date(item.Ingediend).toLocaleDateString('nl-BE') : '—';
+
+  document.getElementById('modal-ref').textContent = ref;
+  document.getElementById('modal-titel').textContent = (item.TypeMelding || type) + ' — ' + school;
+  document.getElementById('modal-meta').textContent = 'Ingediend op ' + datum + ' door ' + (item.IngediendDoor || '—');
+
+  var velden = [
+    ['Naam / betrokkene', item.Naam || item.BetrokkenMedewerker || '—'],
+    ['Type melding', item.TypeMelding || '—'],
+    ['School', school],
+    ['Locatie', item.Locatie || '—'],
+    ['Letsel', item.Letsel || '—'],
+    ['Omschrijving', item.Omschrijving || '—'],
+    ['Genomen actie', item.GekomenActie || item.Actie || '—'],
+    ['Getuigen', item.Getuigen || '—'],
+    ['Bijlagen', item.Bijlagen || '—'],
+    ['AGODI vereist', item.AgodiVereist ? 'Ja' : item.AgodiVereist === false ? 'Nee' : '—'],
+    ['Status', item.Status || 'In behandeling'],
+    ['Opvolging', item.Opvolging || '—'],
+  ].filter(function(r){ return r[1] && r[1] !== '—'; });
+
+  var html = '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  velden.forEach(function(r) {
+    html += '<tr><td style="padding:6px 8px;font-weight:600;color:var(--muted);font-size:11px;width:140px;vertical-align:top;border-bottom:1px solid var(--border)">' + r[0] + '</td>'
+          + '<td style="padding:6px 8px;border-bottom:1px solid var(--border);line-height:1.5">' + r[1] + '</td></tr>';
+  });
+  html += '</table>';
+  document.getElementById('modal-body').innerHTML = html;
+
+  // Zet huidige status in selector
+  var statusEl = document.getElementById('modal-status');
+  if (item.Status) statusEl.value = item.Status;
+
+  document.getElementById('modal-notitie').value = '';
+  document.getElementById('modal-overlay').style.display = 'block';
+}
+
+async function slaOpvolgingOp() {
+  if (!huidigDossier || !huidigDossier._listId || !huidigDossier._itemId) {
+    alert('Kan dossier niet opslaan — lijst of item ID ontbreekt.'); return;
+  }
+  var notitie = document.getElementById('modal-notitie').value;
+  var status = document.getElementById('modal-status').value;
+  try {
+    await graphPatch('/sites/' + CFG.siteId + '/lists/' + huidigDossier._listId + '/items/' + huidigDossier._itemId, {
+      fields: { Status: status, Opvolging: notitie }
+    });
+    alert('Opvolging opgeslagen.');
+    document.getElementById('modal-overlay').style.display = 'none';
+    laadDashboard();
+  } catch(e) { alert('Fout bij opslaan: ' + e.message); }
 }
 
 function exportExcel() { alert('Export functie — koppelen aan Office Scripts of Power Automate flow'); }
