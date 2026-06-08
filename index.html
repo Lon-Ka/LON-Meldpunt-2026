@@ -683,6 +683,13 @@ async function doSubmit(prefix, pijler) {
       }
     } catch(e) { console.error('VP e-mail fout:', e.message); }
   }
+  // Bevestigingsmail naar melder bij welzijn
+  if (prefix === 'WE' && huidigUser && huidigUser.username) {
+    try {
+      var wbBody = 'Beste ' + (huidigUser.name||'') + ',\n\nJe vertrouwelijke welzijnsmelding werd succesvol ingediend.\n\nReferentie: ' + ref + '\nDatum: ' + now.toLocaleDateString('nl-BE') + '\n\nJe melding werd vertrouwelijk doorgestuurd naar de vertrouwenspersoon van jouw school. Enkel de vertrouwenspersoon heeft toegang tot de inhoud.\n\nMet vriendelijke groeten,\nHet LON-Meldpunt-systeem';
+      await graphPost('/me/sendMail', { message:{ subject:'[Vertrouwelijk] Bevestiging welzijnsmelding ' + ref, body:{contentType:'Text',content:wbBody}, toRecipients:[{emailAddress:{address:huidigUser.username}}] }, saveToSentItems:false });
+    } catch(e) {}
+  }
 
   // 2b. E-mail naar directie (niet bij welzijn of risico)
   if (directieEmail && prefix !== 'RI' && prefix !== 'WE') {

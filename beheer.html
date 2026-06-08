@@ -451,7 +451,7 @@ async function initApp(acc) {
     huidigSchool = huidigeBeheerder.school;
   }
   // Verberg welzijn voor niet-geautoriseerden
-  if (!['admin','directie','zorg','staf','vertrouwenspersoon'].includes(huidigeBeheerder.rol)) {
+  if (!['admin','vertrouwenspersoon'].includes(huidigeBeheerder.rol)) {
     document.getElementById('nav-welzijn').style.display='none';
   }
   // AGODI actiekolom: enkel voor admin en staf
