@@ -469,8 +469,10 @@ async function laadDashboard() {
   document.getElementById('kpi-esc').textContent=esc;
   const tbody = document.getElementById('db-tabel');
   recent.sort((a,b)=>new Date(b.Ingediend||0)-new Date(a.Ingediend||0));
-  tbody.innerHTML = recent.slice(0,8).map((i,idx)=>`
-    <tr><td class="cl">${ref(i.TypeMelding?.substring(0,2)||'ME',idx+1)}</td>
+  window.dbItems = recent.slice(0,8);
+  tbody.innerHTML = window.dbItems.map((i,idx)=>`
+    <tr onclick="openDossier(window.dbItems[${idx}],'${i.TypeMelding||'ME'}')" style="cursor:pointer">
+    <td class="cl">${ref(i.TypeMelding?.substring(0,2)||'ME',idx+1)}</td>
     <td>${i.Naam||i.BetrokkenMedewerker||'—'}</td>
     <td>${i.TypeMelding||'—'}</td>
     <td>${schoolNaam(i._school)}</td>
@@ -522,10 +524,12 @@ function show(s) {
   if (s==='beheerders') laadBeheerders();
 }
 
-var aoItems = [];
+window.aoItems = [];
+var aoItems = window.aoItems;
 async function laadAO() {
   const items = await laadLijst('ao','veiligheid');
-  aoItems = items.filter(i=>i.TypeMelding==='Arbeidsongeval'||!i.TypeMelding);
+  window.aoItems = items.filter(i=>i.TypeMelding==='Arbeidsongeval'||!i.TypeMelding);
+  var ao = window.aoItems;
   var ao = items.filter(i=>i.TypeMelding==='Arbeidsongeval'||!i.TypeMelding);
   const kanAgodi = ['admin','staf'].includes(huidigeBeheerder?.rol);
   document.getElementById('ao-tabel').innerHTML = ao.map((i,idx)=>`<tr onclick="openDossier(ao[${idx}],'AO')" style="cursor:pointer">
@@ -542,7 +546,8 @@ async function laadAO() {
     <td>${kanAgodi?`<button class="btn btn-sm btn-p" onclick="stuurAgodiDoor('${ref('AO',idx+1)}','${i.Naam||''}','${i._school}')">📤 Doorsturen naar AGODI</button>`:'—'}</td>
     </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Geen openstaande AGODI-aangiftes</td></tr>';
 }
-var ehboItems = [];
+window.ehboItems = [];
+var ehboItems = window.ehboItems;
 async function laadEHBO() {
   const items = await laadLijst('ehbo','veiligheid');
   ehboItems = items.filter(i=>i.TypeMelding==='EHBO');
@@ -551,7 +556,8 @@ async function laadEHBO() {
     <td class="cl">${ref('EH',idx+1)}</td><td>${i.Naam||'—'}</td><td>${i.Functie||'—'}</td>
     <td>${schoolNaam(i._school)}</td><td>${statusBadge(i.Status)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen EHBO-registraties</td></tr>';
 }
-var loItems = [];
+window.loItems = [];
+var loItems = window.loItems;
 async function laadLO() {
   const items = await laadLijst('lo','veiligheid');
   loItems = items.filter(i=>i.TypeMelding==='Leerlingongeval');
@@ -564,7 +570,8 @@ async function laadLO() {
     <td>${kanVerzeker&&i.Letsel?`<button class="btn btn-sm btn-p" onclick="stuurVerzekering('${ref('LO',idx+1)}','${i._school}')">📤 Verzekering</button>`:'—'}</td>
     </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Geen leerlingenongevallen</td></tr>';
 }
-var riItems = [];
+window.riItems = [];
+var riItems = window.riItems;
 async function laadRisico() {
   const items = await laadLijst('risico','veiligheid');
   riItems = items.filter(i=>i.TypeMelding==='Risico-melding');
@@ -573,16 +580,17 @@ async function laadRisico() {
     <td class="cl">${ref('RI',idx+1)}</td><td>${i.Omschrijving?.substring(0,30)||'—'}</td>
     <td>${statusBadge(i.Ernst||'—')}</td><td>${schoolNaam(i._school)}</td><td>${statusBadge(i.Status)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen risico-meldingen</td></tr>';
 }
-var welzijnItems = [];
+window.welzijnItems = [];
+var welzijnItems = window.welzijnItems;
 async function laadWelzijn() {
   welzijnItems = await laadLijst('welzijn','welzijn');
-  document.getElementById('w-tabel').innerHTML = welzijnItems.map((i,idx)=>`<tr onclick='openDossier(welzijnItems[${idx}],"WE")' style='cursor:pointer'>
+  document.getElementById('w-tabel').innerHTML = welzijnItems.map((i,idx)=>`<tr onclick='openDossier(window.welzijnItems[${idx}],"WE")' style='cursor:pointer'>
     <td class="cl">${ref('WE',idx+1)}</td><td>${i.TypeMelding||'—'}</td>
     <td>${schoolNaam(i._school)}</td><td>${i.Toegewezen||'—'}</td><td>${statusBadge(i.Status)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Geen welzijnsdossiers</td></tr>';
 }
 async function laadIncidenten() {
   incidentItems = await laadLijst('inc','incidenten');
-  document.getElementById('inc-tabel').innerHTML = incidentItems.map((i,idx)=>`<tr onclick='openDossier(incidentItems[${idx}],"INC")' style='cursor:pointer'>
+  document.getElementById('inc-tabel').innerHTML = incidentItems.map((i,idx)=>`<tr onclick='openDossier(window.incidentItems[${idx}],"INC")' style='cursor:pointer'>
     <td class="cl">${ref(i.TypeMelding==='Escalatie'?'ES':i.TypeMelding==='Agressie derden'?'AG':'IN',idx+1)}</td>
     <td>${i.Omschrijving?.substring(0,30)||'—'}</td>
     <td>${i.TypeMelding==='Escalatie'?'<span class="badge b-red">Escalatie</span>':i.TypeMelding||'—'}</td>
