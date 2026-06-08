@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LON-Meldpunt — Kolom Patch</title>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.0/lib/msal-browser.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:14px;background:#f4f5f7;color:#1a1d27;padding:20px}
+h1{font-size:20px;font-weight:600;color:#1F4E79;margin-bottom:4px}
+h2{font-size:14px;font-weight:600;color:#2E75B6;margin:16px 0 8px}
+.sub{font-size:12px;color:#5a6070;margin-bottom:20px}
+.card{background:#fff;border:1px solid #dde2ec;border-radius:10px;padding:18px 20px;margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:8px 18px;border-radius:7px;cursor:pointer;border:none;font-family:inherit;transition:all .14s}
+.btn-p{background:#1F4E79;color:#fff}.btn-p:hover{background:#154060}
+.btn-g{background:#2a9e68;color:#fff}.btn-g:hover{background:#1e7a50}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.log{background:#f0f4f8;border:1px solid #c8d4e8;border-radius:7px;padding:14px;font-family:'Courier New',monospace;font-size:11.5px;max-height:500px;overflow-y:auto;margin-top:12px;line-height:1.8;display:none}
+.log-ok{color:#1e7a50}.log-err{color:#c83232}.log-info{color:#1F4E79}.log-skip{color:#b07800}
+.warn-box{background:#fdf5e0;border:1px solid #f0d890;border-radius:7px;padding:12px 14px;font-size:12px;color:#7a5500;margin-bottom:14px;line-height:1.6}
+.info-box{background:#eaf0fb;border:1px solid #b8cff0;border-radius:7px;padding:12px 14px;font-size:12px;color:#1F4E79;margin-bottom:14px;line-height:1.6}
+#user-bar{display:none;align-items:center;gap:10px;background:#fff;border:1px solid #dde2ec;border-radius:7px;padding:10px 14px;margin-bottom:14px;font-size:12px}
+#patch-section{display:none}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th{text-align:left;padding:7px 10px;background:#eaf0fb;color:#1F4E79;font-weight:600;font-size:11px;border:1px solid #dde2ec}
+td{padding:7px 10px;border:1px solid #dde2ec}
+td code{font-family:'Courier New',monospace;font-size:11px;background:#f0f4f8;padding:1px 5px;border-radius:3px;color:#1F4E79}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.b-grn{background:#e8f8f1;color:#1e7a50;border:1px solid #a0ddc0}
+.b-amb{background:#fdf5e0;color:#b07800;border:1px solid #f0d890}
+</style>
+</head>
+<body>
+<h1>🔧 LON-Meldpunt — Kolommen patch</h1>
+<p class="sub">Voegt de nieuwe kolommen Ernst, PreventiefMaatregel en CorrigerendMaatregel toe aan alle bestaande lijsten</p>
+
+<div class="warn-box">
+⚠️ <strong>Eénmalig uitvoeren.</strong> Dit script voegt enkel nieuwe kolommen toe. Bestaande data en kolommen worden niet gewijzigd. Als een kolom al bestaat wordt ze overgeslagen.
+</div>
+
+<div class="card">
+  <h2>Stap 1 — Aanmelden</h2>
+  <div id="user-bar">
+    <span>✅ Aangemeld als:</span>
+    <strong id="user-name">—</strong>
+    <span style="font-size:11px;background:#eaf0fb;color:#1F4E79;padding:2px 8px;border-radius:10px;border:1px solid #b8cff0" id="user-email">—</span>
+  </div>
+  <button class="btn btn-p" id="btn-login" onclick="login()">Aanmelden met Microsoft 365</button>
+</div>
+
+<div id="patch-section">
+  <div class="card">
+    <h2>Stap 2 — Overzicht nieuwe kolommen</h2>
+    <div class="info-box">De volgende kolommen worden toegevoegd aan alle Veiligheid- en Incidentenlijsten (12 lijsten in totaal). Welzijnlijsten krijgen enkel de kolom Opvolging indien die ontbreekt.</div>
+    <table>
+      <tr><th>Kolomnaam</th><th>Type</th><th>Doellijsten</th><th>Functie</th></tr>
+      <tr><td><code>Ernst</code></td><td>Tekst (enkelvoudig)</td><td>Alle Veiligheid + Incidenten</td><td>Ernstgraad: Laag / Gemiddeld / Hoog / Kritiek</td></tr>
+      <tr><td><code>PreventiefMaatregel</code></td><td>Tekst (meerdere regels)</td><td>Alle Veiligheid + Incidenten</td><td>Maatregelen om herhaling te voorkomen</td></tr>
+      <tr><td><code>CorrigerendMaatregel</code></td><td>Tekst (meerdere regels)</td><td>Alle Veiligheid + Incidenten</td><td>Directe herstelacties</td></tr>
+      <tr><td><code>Opvolging</code></td><td>Tekst (meerdere regels)</td><td>Alle lijsten (indien ontbreekt)</td><td>Opvolgnotities beheerders</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Stap 3 — Patch uitvoeren</h2>
+    <button class="btn btn-g" id="btn-patch" onclick="runPatch()">▶ Kolommen toevoegen</button>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+
+<script>
+const CFG = {
+  clientId: '08dcc1b5-6041-4e67-ba6f-14650d4e6e62',
+  tenantId: '655d15e1-e5fc-4868-8462-8463dc0ff014',
+  redirectUri: 'https://lon-ka.github.io/LON-Meldpunt-2026/patch.html',
+  siteId: 'londerwijs.sharepoint.com,2463b644-ba24-4563-a37f-a67f26941a09,4d5ecb10-38f0-422f-b892-af256a5da6fc',
+  lists: {
+    veiligheid_csl: '90fc919d-84bd-4f45-8706-1a0a7815b06c', veiligheid_css: 'db607478-fa64-414a-ab68-5097ae85b9d2', veiligheid_ko: '89e1e4c7-2421-4f9b-b287-f2493d779e81', veiligheid_te: 'de860ee3-e497-4c66-903d-9018b91345bd',
+    welzijn_csl: '4e9b9eed-c793-48ad-88fb-5acf1b9c61b9', welzijn_css: 'fa0bd5f1-4343-410c-b1aa-1c023858f657', welzijn_ko: '0d17c922-7c7d-4bb7-b4b4-0566641d28b0', welzijn_te: 'daabc887-88f3-4988-8a01-04bdf4d03342',
+    incidenten_csl: 'f9692d06-e2f4-45c1-a264-93bf749197bc', incidenten_css: 'e6681497-b559-4b5d-8b57-cfa20eaf9fda', incidenten_ko: '5703677e-a5c6-465b-9b27-641a6ea9698d', incidenten_te: 'deab033a-0495-472f-84a0-9ac71c5c4726',
+  },
+};
+
+const NIEUWE_KOLOMMEN_VW = [
+  { name: 'Ernst', type: 'text', multi: false },
+  { name: 'PreventiefMaatregel', type: 'text', multi: true },
+  { name: 'CorrigerendMaatregel', type: 'text', multi: true },
+  { name: 'Opvolging', type: 'text', multi: true },
+];
+const NIEUWE_KOLOMMEN_WELZIJN = [
+  { name: 'Opvolging', type: 'text', multi: true },
+];
+
+const msalCfg = {
+  auth: { clientId: CFG.clientId, authority: `https://login.microsoftonline.com/${CFG.tenantId}`, redirectUri: CFG.redirectUri },
+  cache: { cacheLocation: 'localStorage' }
+};
+const msalClient = new msal.PublicClientApplication(msalCfg);
+let token = null;
+
+async function login() {
+  await msalClient.initialize();
+  const resp = await msalClient.handleRedirectPromise();
+  if (resp) { token = resp.accessToken; showUser(resp.account); return; }
+  const accs = msalClient.getAllAccounts();
+  if (accs.length) {
+    try {
+      const t = await msalClient.acquireTokenSilent({ scopes: ['Sites.FullControl.All'], account: accs[0] });
+      token = t.accessToken; showUser(accs[0]); return;
+    } catch(e) {}
+  }
+  await msalClient.loginRedirect({ scopes: ['Sites.FullControl.All'] });
+}
+
+function showUser(acc) {
+  document.getElementById('btn-login').style.display = 'none';
+  const ub = document.getElementById('user-bar'); ub.style.display = 'flex';
+  document.getElementById('user-name').textContent = acc.name || acc.username;
+  document.getElementById('user-email').textContent = acc.username;
+  document.getElementById('patch-section').style.display = 'block';
+}
+
+function log(msg, type='info') {
+  const d = document.getElementById('log'); d.style.display = 'block';
+  d.innerHTML += `<div class="log-${type}">${new Date().toLocaleTimeString('nl')} — ${msg}</div>`;
+  d.scrollTop = d.scrollHeight;
+}
+
+async function bestaatKolom(listId, naam) {
+  const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${CFG.siteId}/lists/${listId}/columns`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await r.json();
+  return data.value?.some(c => c.name === naam || c.displayName === naam);
+}
+
+async function voegKolomToe(listId, listNaam, kol) {
+  const bestaat = await bestaatKolom(listId, kol.name);
+  if (bestaat) { log(`  ⏭ ${kol.name} bestaat al in ${listNaam}`, 'skip'); return; }
+  const body = kol.multi
+    ? { name: kol.name, text: { allowMultipleLines: true, linesForEditing: 4 } }
+    : { name: kol.name, text: {} };
+  const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${CFG.siteId}/lists/${listId}/columns`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (r.ok) {
+    log(`  ✅ ${kol.name} toegevoegd aan ${listNaam}`, 'ok');
+  } else {
+    const e = await r.json();
+    log(`  ❌ Fout bij ${kol.name} in ${listNaam}: ${e.error?.message || r.status}`, 'err');
+  }
+}
+
+async function runPatch() {
+  const btn = document.getElementById('btn-patch');
+  btn.disabled = true; btn.textContent = '⏳ Bezig…';
+
+  log('=== LON-Meldpunt Kolom Patch gestart ===', 'info');
+  let totaal = 0, toegevoegd = 0, overgeslagen = 0, fouten = 0;
+
+  for (const [key, listId] of Object.entries(CFG.lists)) {
+    if (!listId || listId === 'PLACEHOLDER') {
+      log(`⚠️ ${key}: List ID niet ingevuld — overgeslagen`, 'skip');
+      continue;
+    }
+    const isWelzijn = key.startsWith('welzijn');
+    const kolommen = isWelzijn ? NIEUWE_KOLOMMEN_WELZIJN : NIEUWE_KOLOMMEN_VW;
+    const prefix = key.replace('_', '-').toUpperCase();
+    log(`\n📋 Lijst: LON-${prefix}`, 'info');
+
+    for (const kol of kolommen) {
+      totaal++;
+      try {
+        const bestaat = await bestaatKolom(listId, kol.name);
+        if (bestaat) {
+          log(`  ⏭ ${kol.name} bestaat al`, 'skip');
+          overgeslagen++;
+        } else {
+          const body = kol.multi
+            ? { name: kol.name, text: { allowMultipleLines: true, linesForEditing: 4 } }
+            : { name: kol.name, text: {} };
+          const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${CFG.siteId}/lists/${listId}/columns`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          if (r.ok) { log(`  ✅ ${kol.name} toegevoegd`, 'ok'); toegevoegd++; }
+          else { const e = await r.json(); log(`  ❌ ${kol.name}: ${e.error?.message || r.status}`, 'err'); fouten++; }
+        }
+      } catch(e) { log(`  ❌ ${kol.name}: ${e.message}`, 'err'); fouten++; }
+    }
+  }
+
+  log(`\n=== Patch voltooid ===`, 'info');
+  log(`Toegevoegd: ${toegevoegd} | Overgeslagen (bestonden al): ${overgeslagen} | Fouten: ${fouten}`, fouten > 0 ? 'err' : 'ok');
+  btn.textContent = '✅ Patch voltooid';
+}
+
+window.addEventListener('load', async () => {
+  await msalClient.initialize();
+  const resp = await msalClient.handleRedirectPromise();
+  if (resp) { token = resp.accessToken; showUser(resp.account); }
+  else {
+    const accs = msalClient.getAllAccounts();
+    if (accs.length) {
+      try {
+        const t = await msalClient.acquireTokenSilent({ scopes: ['Sites.FullControl.All'], account: accs[0] });
+        token = t.accessToken; showUser(accs[0]);
+      } catch(e) {}
+    }
+  }
+});
+</script>
+</body>
+</html>
