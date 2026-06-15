@@ -139,7 +139,7 @@ window.addEventListener('message', function(event) {
   if (window._portalToken) return;
   window._portalToken = event.data.token;
   window._portalEmail = event.data.email || '';
-  if (!window._appBooted) boot();
+  if (!window._appBooted) login();
 });
 </script>
 </head>
