@@ -245,7 +245,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
       <div class="fsec"><div class="fsec-t">GDPR-toestemming</div>
         <div class="cbox">
           <div class="crow"><input type="checkbox" id="c1" checked><label for="c1">Ik bevestig dat de ingevoerde gegevens correct zijn en geef toestemming voor verwerking conform het <a onclick="window.open('gdpr.html','_blank')">privacybeleid van LON</a>.</label></div>
-          <div class="crow"><input type="checkbox" id="c2"><label for="c2">Ik geef toestemming voor het doorsturen van relevante gegevens aan AGODI en verzekeringsmaatschappij Ethias in het kader van de aangifte.</label></div>
+          <div class="crow"><input type="checkbox" id="c2"><label for="c2">Ik geef toestemming voor het doorsturen van relevante gegevens aan AGODI en verzekeringsmaatschappij AXA in het kader van de aangifte.</label></div>
           <div class="crow"><input type="checkbox" id="c3"><label for="c3">Ik begrijp dat medische bijlagen worden verwijderd conform de bewaartermijnen (consolidatie + 1 jaar).</label></div>
         </div>
       </div>
@@ -421,7 +421,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
 const CFG = {
   clientId: '08dcc1b5-6041-4e67-ba6f-14650d4e6e62',
   tenantId: '655d15e1-e5fc-4868-8462-8463dc0ff014',
-  redirectUri: 'https://lon-ka.github.io/LON-Meldpunt-2026/',
+  redirectUri: 'https://lon-ka.github.io/LON-Meldpunt/',
   siteId: 'londerwijs.sharepoint.com,2463b644-ba24-4563-a37f-a67f26941a09,4d5ecb10-38f0-422f-b892-af256a5da6fc',
   lists: {
     veiligheid_csl: '90fc919d-84bd-4f45-8706-1a0a7815b06c', veiligheid_css: 'db607478-fa64-414a-ab68-5097ae85b9d2', veiligheid_ko: '89e1e4c7-2421-4f9b-b287-f2493d779e81', veiligheid_te: 'de860ee3-e497-4c66-903d-9018b91345bd',
@@ -435,10 +435,10 @@ const CFG = {
     { sleutel:'ko',  naam:'Kouterschool' },
     { sleutel:'te',  naam:'School Ter Elst' },
   ],
-  beheerUrl: 'https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html',
+  beheerUrl: 'https://lon-ka.github.io/LON-Meldpunt/beheer.html',
   org: 'LON-Meldpunt',
   ritaEmail: 'secretariaatlonka@centrumschool.londerzeel.be',
-  beheerUrl: 'https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html',
+  beheerUrl: 'https://lon-ka.github.io/LON-Meldpunt/beheer.html',
   org: 'LON-Meldpunt',
   ritaEmail: 'secretariaatlonka@centrumschool.londerzeel.be',
   directieEmails: {
@@ -671,6 +671,16 @@ async function doSubmit(prefix, pijler) {
   }
 
   var directieEmail = CFG.directieEmails[school];
+  // Zoek preventieadviseur op voor escalaties
+  var preventieEmail = null;
+  if (prefix === 'ES' && CFG.lists.beheerders && CFG.lists.beheerders !== 'PLACEHOLDER') {
+    try {
+      var paData = await graphGet('/sites/' + CFG.siteId + '/lists/' + CFG.lists.beheerders + '/items?$expand=fields&$top=100');
+      var paItem = paData.value.find(function(i){ return i.fields.Rol === 'preventieadviseur' && (i.fields.School === school || !i.fields.School || i.fields.School === 'alle') && i.fields.Actief !== false; });
+      if (paItem) preventieEmail = paItem.fields.Email;
+    } catch(e) {}
+  }
+
 
   // 2a. Welzijn: stuur naar vertrouwenspersoon van de school
   if (prefix === 'WE' && CFG.lists.beheerders && CFG.lists.beheerders !== 'PLACEHOLDER') {
@@ -678,7 +688,7 @@ async function doSubmit(prefix, pijler) {
       var vpData = await graphGet('/sites/' + CFG.siteId + '/lists/' + CFG.lists.beheerders + '/items?$expand=fields&$top=100');
       var vpItem = vpData.value.find(function(i){ return i.fields.Rol === 'vertrouwenspersoon' && (i.fields.School === school || !i.fields.School || i.fields.School === 'alle') && i.fields.Actief !== false; });
       if (vpItem && vpItem.fields.Email) {
-        var vpBody = '[VERTROUWELIJK] Nieuwe welzijnsmelding ingediend via LON-Meldpunt.\n\nReferentie: ' + ref + '\nSchool: ' + schoolNaam(school) + '\nDatum: ' + now.toLocaleDateString('nl-BE') + '\n\nRaadpleeg het beheerspaneel voor de details:\nhttps://lon-ka.github.io/LON-Meldpunt-2026/beheer.html\n\nDit bericht is strikt vertrouwelijk.';
+        var vpBody = '[VERTROUWELIJK] Nieuwe welzijnsmelding ingediend via LON-Meldpunt.\n\nReferentie: ' + ref + '\nSchool: ' + schoolNaam(school) + '\nDatum: ' + now.toLocaleDateString('nl-BE') + '\n\nRaadpleeg het beheerspaneel voor de details:\nhttps://lon-ka.github.io/LON-Meldpunt/beheer.html\n\nDit bericht is strikt vertrouwelijk.';
         await graphPost('/me/sendMail', { message:{ subject:'[Vertrouwelijk] Nieuwe welzijnsmelding — ' + schoolNaam(school), body:{contentType:'Text',content:vpBody}, toRecipients:[{emailAddress:{address:vpItem.fields.Email}}] }, saveToSentItems:false });
       }
     } catch(e) { console.error('VP e-mail fout:', e.message); }
@@ -694,7 +704,11 @@ async function doSubmit(prefix, pijler) {
   // 2b. E-mail naar directie (niet bij welzijn of risico)
   if (directieEmail && prefix !== 'RI' && prefix !== 'WE') {
     try {
-      var dBody = 'Nieuwe melding ingediend via LON-Meldpunt.\n\nReferentie: ' + ref + '\nType: ' + prefix + '\nSchool: ' + schoolNaam(school) + '\nDatum: ' + now.toLocaleDateString('nl-BE') + '\nIngediend door: ' + ((huidigUser && huidigUser.name) || '—') + '\n\nBeheerspaneel: https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html\n(Kopieer en plak de URL indien de link niet werkt.)';
+      var ccEmpfaenger = [{emailAddress:{address:directieEmail}}];
+      // AXA in CC bij arbeidsongeval
+      var bccList = [];
+      if (prefix === 'AO') bccList.push({emailAddress:{address:'po.ong@axa.be'}});
+      var dBody = 'Nieuwe melding ingediend via LON-Meldpunt.\n\nReferentie: ' + ref + '\nType: ' + prefix + '\nSchool: ' + schoolNaam(school) + '\nDatum: ' + now.toLocaleDateString('nl-BE') + '\nIngediend door: ' + ((huidigUser && huidigUser.name) || '—') + '\n\nBeheerspaneel: https://lon-ka.github.io/LON-Meldpunt/beheer.html\n(Kopieer en plak de URL indien de link niet werkt.)';
       await graphPost('/me/sendMail', { message:{ subject:'[LON-Meldpunt] Nieuwe melding: ' + prefix + ' — ' + schoolNaam(school), body:{contentType:'Text',content:dBody}, toRecipients:[{emailAddress:{address:directieEmail}}] }, saveToSentItems:false });
     } catch(e) {}
   }
@@ -702,7 +716,7 @@ async function doSubmit(prefix, pijler) {
   // 3. CC naar Rita (niet bij welzijn of risico)
   if (prefix !== 'RI' && prefix !== 'WE') {
     try {
-      var rBody = 'CC melding via LON-Meldpunt.\n\nReferentie: ' + ref + '\nType: ' + prefix + '\nSchool: ' + schoolNaam(school) + '\nIngediend door: ' + ((huidigUser && huidigUser.name) || '—') + '\n\nBeheerspaneel: https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html';
+      var rBody = 'CC melding via LON-Meldpunt.\n\nReferentie: ' + ref + '\nType: ' + prefix + '\nSchool: ' + schoolNaam(school) + '\nIngediend door: ' + ((huidigUser && huidigUser.name) || '—') + '\n\nBeheerspaneel: https://lon-ka.github.io/LON-Meldpunt/beheer.html';
       await graphPost('/me/sendMail', { message:{ subject:'[LON-Meldpunt] CC: ' + prefix + ' — ' + schoolNaam(school), body:{contentType:'Text',content:rBody}, toRecipients:[{emailAddress:{address:'secretariaatlonka@centrumschool.londerzeel.be'}}] }, saveToSentItems:false });
     } catch(e) {}
   }

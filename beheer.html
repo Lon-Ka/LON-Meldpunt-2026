@@ -389,7 +389,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
 const CFG = {
   clientId: '08dcc1b5-6041-4e67-ba6f-14650d4e6e62',
   tenantId: '655d15e1-e5fc-4868-8462-8463dc0ff014',
-  redirectUri: 'https://lon-ka.github.io/LON-Meldpunt-2026/beheer.html',
+  redirectUri: 'https://lon-ka.github.io/LON-Meldpunt/beheer.html',
   siteId: 'londerwijs.sharepoint.com,2463b644-ba24-4563-a37f-a67f26941a09,4d5ecb10-38f0-422f-b892-af256a5da6fc',
   lists: {
     veiligheid_csl: '90fc919d-84bd-4f45-8706-1a0a7815b06c', veiligheid_css: 'db607478-fa64-414a-ab68-5097ae85b9d2', veiligheid_ko: '89e1e4c7-2421-4f9b-b287-f2493d779e81', veiligheid_te: 'de860ee3-e497-4c66-903d-9018b91345bd',
@@ -445,13 +445,17 @@ async function initApp(acc) {
   document.getElementById('b-av').textContent = avText;
 
   // Beperk schoolfilter als directie van 1 school
-  if (['directie','zorg','secretariaat','vertrouwenspersoon'].includes(huidigeBeheerder.rol) && huidigeBeheerder.school && huidigeBeheerder.school !== 'alle') {
+  if (['directie','zorg','secretariaat','vertrouwenspersoon','preventieadviseur'].includes(huidigeBeheerder.rol) && huidigeBeheerder.school && huidigeBeheerder.school !== 'alle') {
     const sf = document.getElementById('school-filter');
     sf.value = huidigeBeheerder.school; sf.disabled = true;
     huidigSchool = huidigeBeheerder.school;
   }
   // Verberg welzijn voor niet-geautoriseerden
   if (!['admin','vertrouwenspersoon'].includes(huidigeBeheerder.rol)) {
+    document.getElementById('nav-welzijn').style.display='none';
+  }
+  // Preventieadviseur: enkel veiligheid en incidenten zichtbaar, geen welzijn
+  if (huidigeBeheerder.rol === 'preventieadviseur') {
     document.getElementById('nav-welzijn').style.display='none';
   }
   // AGODI actiekolom: enkel voor admin en staf
@@ -876,7 +880,7 @@ async function stuurAgodiDoor(ref, naam, school) {
 }
 
 async function stuurVerzekering(ref, school) {
-  const body = `Verzekeringsmelding leerlingongeval:\n\nRef: ${ref}\nSchool: ${schoolNaam(school)}\n\nGelieve dit dossier door te sturen naar Ethias.`;
+  const body = `Verzekeringsmelding leerlingongeval:\n\nRef: ${ref}\nSchool: ${schoolNaam(school)}\n\nGelieve dit dossier door te sturen naar AXA.`;
   try {
     await graphPost('/me/sendMail', {
       message: {
