@@ -129,6 +129,19 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--blauw-bg)}
 .login-s{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5}
 .login-scholen{font-size:11px;color:#aab;margin-bottom:16px;line-height:1.6}
 </style>
+<script>
+window._portalToken = null;
+window._portalEmail = '';
+window._appBooted = false;
+window.addEventListener('message', function(event) {
+  if (event.origin !== 'https://lon-ka.github.io') return;
+  if (!event.data || event.data.type !== 'MSAL_TOKEN') return;
+  if (window._portalToken) return;
+  window._portalToken = event.data.token;
+  window._portalEmail = event.data.email || '';
+  if (!window._appBooted) boot();
+});
+</script>
 </head>
 <body>
 
